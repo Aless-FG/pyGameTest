@@ -16,7 +16,7 @@ FRIC = -0.10
 FPS = 60
 FPS_CLOCK = pygame.time.Clock()
 COUNT = 0
-test = True
+
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game")
 
