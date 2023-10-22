@@ -1,10 +1,9 @@
 import pygame
 from pygame.locals import *
 import sys
-import random
-from tkinter import filedialog
-from tkinter import *
-
+from background import Background
+from ground import Ground
+from enemy import Enemy
 pygame.init()  # Begin pygame
 
 # Declaring variables to be used through the program
@@ -46,24 +45,9 @@ attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png"), pygame.image.load(
                 pygame.image.load("png/Player_Attack4_L.png"), pygame.image.load("png/Player_Attack4_L.png"),
                 pygame.image.load("png/Player_Attack5_L.png"), pygame.image.load("png/Player_Attack5_L.png"),
                 pygame.image.load("png/Player_Sprite_L.png")]
-class Background(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.bgimage = pygame.image.load("png/Background.png")
-        self.bgY = 0
-        self.bgX = 0
 
-    def render(self):
-        displaysurface.blit(self.bgimage, (self.bgX, self.bgY))
 
-class Ground(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("png/Ground.png")
-        self.rect = self.image.get_rect(center=(350, 350))
 
-    def render(self):
-        displaysurface.blit(self.image, (self.rect.x, self.rect.y))
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -85,7 +69,7 @@ class Player(pygame.sprite.Sprite):
 
     def move(self):
         # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
-        self.acc = vec(0, 1)
+        self.acc = vec(0, 0.5)
         # Will set running to False if the player has slowed down to a certain extent
         if abs(self.vel.x) > 0.3:
             self.running = True
@@ -175,15 +159,14 @@ class Player(pygame.sprite.Sprite):
                     self.pos.y = lowest.rect.top + 1
                     self.vel.y = 0
                     self.jumping = False
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
+
 
 background = Background()
 ground = Ground()
 player = Player()
 ground_group = pygame.sprite.Group()
 ground_group.add(ground)
+
 while True:
     player.gravity_check()
     player.update()
