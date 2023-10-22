@@ -7,7 +7,7 @@ from enemy import Enemy
 pygame.init()  # Begin pygame
 
 # Declaring variables to be used through the program
-vec = pygame.math.Vector2
+vec = pygame.math.Vector2 # used to record X and Y position of the player
 HEIGHT = 350
 WIDTH = 730
 ACC = 0.3
@@ -16,8 +16,8 @@ FPS = 60
 FPS_CLOCK = pygame.time.Clock()
 COUNT = 0
 
-displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Game")
+displaysurface = pygame.display.set_mode((WIDTH, HEIGHT)) # displays the game using width and height
+pygame.display.set_caption("Game") # changes window's title
 
 run_ani_R = [pygame.image.load("png/Player_Sprite_R.png"), pygame.image.load("png/Player_Sprite2_R.png"),
              pygame.image.load("png/Player_Sprite3_R.png"), pygame.image.load("png/Player_Sprite4_R.png"),
@@ -49,7 +49,7 @@ attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png"), pygame.image.load(
 
 
 
-class Player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite class
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("png/Player_Sprite_R.png")
@@ -57,26 +57,26 @@ class Player(pygame.sprite.Sprite):
 
         # Position and direction
         self.vx = 0
-        self.pos = vec((340, 240))
-        self.vel = vec(0, 0)
-        self.acc = vec(0, 0)
-        self.direction = "RIGHT"
+        self.pos = vec((340, 240)) # position of the player
+        self.vel = vec(0, 0) # velocity of the player
+        self.acc = vec(0, 0) # acceleration of the player
+        self.direction = "RIGHT" # used to store the current direction of the Player
         self.jumping = False
         self.running = False
-        self.move_frame = 0
+        self.move_frame = 0 # track the current frame of the character being displayed
         self.attacking = False
         self.attack_frame = 0
 
     def move(self):
-        # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
-        self.acc = vec(0, 0.5)
+
+        self.acc = vec(0, 0.5) # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
         # Will set running to False if the player has slowed down to a certain extent
-        if abs(self.vel.x) > 0.3:
+        if abs(self.vel.x) > 0.3: #use abs() to return the magnitude since the velocity can be in the negative direction (the left direction)
             self.running = True
         else:
             self.running = False
-        # Returns the current key presses
-        pressed_keys = pygame.key.get_pressed()
+
+        pressed_keys = pygame.key.get_pressed() # Returns the current key presses
 
         # Accelerates the player in the direction of the key press
         if pressed_keys[K_LEFT]:
@@ -84,10 +84,14 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.acc.x = ACC
         # Formulas to calculate velocity while accounting for friction
-        self.acc.x += self.vel.x * FRIC
-        self.vel += self.acc
+        self.acc.x += self.vel.x * FRIC # updates object's acceleration
+        self.vel += self.acc # updates object's velocity
         self.pos += self.vel + 0.5 * self.acc  # Updates Position with new values
-        # This causes character warping from one point of the screen to the other
+        """
+        This causes character warping from one point of the screen to the other
+        If you want to disable this feature, swap the 0 and WIDTH values of self.pos.x statements within the if statements. 
+        This will create the opposite effect, not allowing the Player to move past the edge.
+        """
         if self.pos.x > WIDTH:
             self.pos.x = 0
         if self.pos.x < 0:
@@ -95,11 +99,15 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.midbottom = self.pos  # Update rect with new pos
 
-    def update(self):
+    def update(self): # This function is in charge of changing the movement frame of the Player if he's moving.
         if self.move_frame > 6:
             self.move_frame = 0
             return
         if self.jumping == False and self.running == True:
+            """
+            If the player’s velocity is greater than 0, then that means that he is moving in the right direction.
+             Otherwise he is going in the left.
+            """
             if self.vel.x > 0:
                 self.image = run_ani_R[self.move_frame]
                 self.direction = "RIGHT"
@@ -151,19 +159,32 @@ class Player(pygame.sprite.Sprite):
         if self.attack_frame == 10:
             self.pos.x += 20
     def gravity_check(self):
+        # takes three parameters, the sprite to be tested, and secondly the sprite group against which the sprite will be tested.
+        # The third parameter takes a True or False value which determines whether to kill the sprite if a collision occurs
         hits = pygame.sprite.spritecollide(player, ground_group, False)
+        """
+        check whether the player has any velocity in the downwards direction. 
+        If he doesn’t, then all is good (because he isn’t falling and thus is on the ground). 
+        If however he is falling we will proceed.
+        """
         if self.vel.y > 0:
-            if hits:
+            if hits: # will run if the hits variable recorded a collision between the player and ground
+                """
+                selects the first ground object from the list of hits. 
+                The assumption here is that the first ground object in the list is the one closest to the player's current position along the y-axis.
+                """
                 lowest = hits[0]
-                if self.pos.y < lowest.rect.bottom:
-                    self.pos.y = lowest.rect.top + 1
-                    self.vel.y = 0
+                if self.pos.y < lowest.rect.bottom: #checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
+                    self.pos.y = lowest.rect.top + 1 # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
+                    self.vel.y = 0 # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
 
 
 background = Background()
 ground = Ground()
 player = Player()
+# Sprite groups are used to manage and update multiple sprites simultaneously.
+# the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
 ground_group.add(ground)
 
@@ -171,6 +192,15 @@ while True:
     player.gravity_check()
     player.update()
     player.move()
+    """
+    render functions
+    Always render the background first, then the ground and then all the players and enemies on top of the ground.
+    """
+    background.render()
+    ground.render()
+    displaysurface.blit(player.image, player.rect) # rect stores a pair coordinates
+
+
     if player.attacking == True:
         player.attack()
     displaysurface.blit(player.image, player.rect)
@@ -192,8 +222,5 @@ while True:
                 if player.attacking == False:
                     player.attack()
                     player.attacking = True
-    background.render()
-    ground.render()
-    displaysurface.blit(player.image, player.rect)
-    pygame.display.update()
-    FPS_CLOCK.tick(FPS)
+    FPS_CLOCK.tick(FPS) # limits fps to 60
+    pygame.display.update() # Changes in the game are not implemented until the pygame.display.update() function has been called. This function is responsible for updating your game window with any changes that have been made within that specific iteration of the game loop.
