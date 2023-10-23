@@ -15,7 +15,7 @@ FRIC = -0.10
 FPS = 60
 FPS_CLOCK = pygame.time.Clock()
 COUNT = 0
-
+hit_cooldown = pygame.USEREVENT + 1 # need to create a new custom event
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT)) # displays the game using width and height
 pygame.display.set_caption("Game") # changes window's title
 
@@ -66,6 +66,7 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
         self.move_frame = 0 # track the current frame of the character being displayed
         self.attacking = False
         self.attack_frame = 0
+        self.cooldown = False
 
     def move(self):
 
@@ -138,6 +139,17 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
             # Update the current attack frame
         self.attack_frame += 1
 
+    def player_hit(self):
+        if self.cooldown == False:
+            self.cooldown = True  # Enable the cooldown
+            """
+            set_timer() function which will take two parameters, a UserEvent and a time interval.
+             The UserEvent will be sent out as an event signal
+            """
+            pygame.time.set_timer(hit_cooldown, 1000)  # Resets cooldown in 1 second
+
+            print("hit")
+            pygame.display.update()
     def jump(self):
         self.rect.x += 1
 
@@ -183,14 +195,19 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
 background = Background()
 ground = Ground()
 player = Player()
+enemy = Enemy()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
 ground_group.add(ground)
+Playergroup = pygame.sprite.Group()
+Playergroup.add(player)
 
 while True:
     player.gravity_check()
     player.update()
+    if player.attacking == True:
+        player.attack()
     player.move()
     """
     render functions
@@ -199,10 +216,9 @@ while True:
     background.render()
     ground.render()
     displaysurface.blit(player.image, player.rect) # rect stores a pair coordinates
-
-
-    if player.attacking == True:
-        player.attack()
+    enemy.update()
+    enemy.move()
+    enemy.render()
     displaysurface.blit(player.image, player.rect)
     for event in pygame.event.get():
         # Will run when the close window button is clicked
@@ -213,7 +229,13 @@ while True:
             # For events that occur upon clicking the mouse (left click)
         if event.type == pygame.MOUSEBUTTONDOWN:
             pass
-
+        """
+        It’s important to call the timer again with a time duration of 0.
+         This automatically disables it. Otherwise it could keep calling itself every second wasting resources.
+        """
+        if event.type == hit_cooldown:
+            player.cooldown = False
+            pygame.time.set_timer(hit_cooldown, 0)
         # Event handling for a range of different key presses
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -222,5 +244,7 @@ while True:
                 if player.attacking == False:
                     player.attack()
                     player.attacking = True
+                player.update()
+
     FPS_CLOCK.tick(FPS) # limits fps to 60
     pygame.display.update() # Changes in the game are not implemented until the pygame.display.update() function has been called. This function is responsible for updating your game window with any changes that have been made within that specific iteration of the game loop.
