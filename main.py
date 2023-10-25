@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 from background import Background
+from castle import Castle
 from ground import Ground
 from enemy import Enemy
 pygame.init()  # Begin pygame
@@ -195,17 +196,19 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
 background = Background()
 ground = Ground()
 player = Player()
-enemy = Enemy()
+castle = Castle()
+# enemy = Enemy()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
 ground_group.add(ground)
-Playergroup = pygame.sprite.Group()
-Playergroup.add(player)
+playergroup = pygame.sprite.Group()
+playergroup.add(player)
 
 while True:
     player.gravity_check()
     player.update()
+
     if player.attacking == True:
         player.attack()
     player.move()
@@ -215,10 +218,11 @@ while True:
     """
     background.render()
     ground.render()
+    
     displaysurface.blit(player.image, player.rect) # rect stores a pair coordinates
-    enemy.update()
-    enemy.move()
-    enemy.render()
+    #enemy.update()
+    #enemy.move()
+    #enemy.render()
     displaysurface.blit(player.image, player.rect)
     for event in pygame.event.get():
         # Will run when the close window button is clicked
