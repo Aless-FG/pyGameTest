@@ -8,6 +8,7 @@ from enemy import Enemy
 from tkinter import Tk, Button
 
 from healthbar import HealthBar
+from statusbar import StatusBar
 
 pygame.init()  # Begin pygame
 
@@ -77,6 +78,8 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
         self.attack_frame = 0
         self.cooldown = False
         self.health = 5
+        self.mana = 0
+        self.xp = 0
 
     def move(self):
 
@@ -216,6 +219,7 @@ class EventHandler():
 
         self.stage = 1
         self.enemy_count = 0
+        self.dead_enemy_count = 0
         self.battle = False
         self.enemy_generation = pygame.USEREVENT + 2
 
@@ -226,9 +230,16 @@ class EventHandler():
     def next_stage(self):  # Code for when the next stage is clicked
         self.stage += 1
         self.enemy_count = 0
+        self.dead_enemy_count = 0
         print("Stage: " + str(self.stage))
         # The higher the stage number, the lower the time gap between enemy spawns, meaning harder levels
         pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage)) # sets the timer for enemy generation
+
+    def update(self):
+        if self.dead_enemy_count == self.stage_enemies[self.stage - 1]: # if all the enemies have been killed
+            self.dead_enemy_count = 0 # resets the counter
+            stage_display.clear = True # the text can now be displayed
+            stage_display.stage_clear() # shows stage clear when there are no more enemies
 
     def stage_handler(self): # starting menu
         # Code for the Tkinter stage selection window
@@ -269,11 +280,11 @@ class StageDisplay(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.headingfont = pygame.font.SysFont('notosansmono', 30)
-        self.text = self.headingfont.render("STAGE: " + str(handler.stage), True, (0,0,0))
-        self.rect = self.text.get_rect()
+        self.stageclearfont = pygame.font.SysFont('notosansmono', 30)
         self.posx = -100 # -100” position on the x-axis. This keeps it safely out of the window
         self.posy = 100
         self.display = False
+        self.clear = False
 
     def move_display(self): # is incharge of “moving” the display across the screen
         # Create the text to be displayed
@@ -283,7 +294,18 @@ class StageDisplay(pygame.sprite.Sprite):
             displaysurface.blit(self.text, (self.posx, self.posy))
         else:
             self.display = False
-            self.kill()
+            self.posx = -100
+            self.posy = 100
+
+    def stage_clear(self):
+        self.text = self.stageclearfont.render("STAGE CLEAR!", True, (0,0,0))
+        if self.posx < 720:
+            self.posx += 5
+            displaysurface.blit(self.text, (self.posx, self.posy))
+        else:
+            self.clear = False
+            self.posx = -100
+            self.posy = 100
 
 background = Background()
 ground = Ground()
@@ -292,7 +314,8 @@ castle = Castle()
 handler = EventHandler()
 stage_display = StageDisplay()
 health = HealthBar()
-# enemy = Enemy()
+status_bar = StatusBar()
+
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
@@ -327,6 +350,16 @@ while True:
     health.render() # rect stores a pair coordinates
     if stage_display.display == True:
         stage_display.move_display()
+    if stage_display.clear == True:
+        stage_display.stage_clear()
+    """
+    the status bar must render first, and then the text will render on top of it. 
+    Doing it the other way around would hide the text completely.
+    """
+    displaysurface.blit(status_bar.surf, (630, 5))
+    status_bar.update_draw()
+    handler.update()
+
     for entity in enemies: # spawns enemies
         entity.update()
         entity.move()
