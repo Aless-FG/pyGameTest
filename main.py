@@ -7,6 +7,7 @@ from ground import Ground
 from enemy import Enemy
 from tkinter import Tk, Button
 
+from healthbar import HealthBar
 
 pygame.init()  # Begin pygame
 
@@ -50,6 +51,10 @@ attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png"), pygame.image.load(
                 pygame.image.load("png/Player_Attack5_L.png"), pygame.image.load("png/Player_Attack5_L.png"),
                 pygame.image.load("png/Player_Sprite_L.png")]
 
+health_ani = [pygame.image.load("png/heart0.png"), pygame.image.load("png/heart.png"),
+              pygame.image.load("png/heart2.png"), pygame.image.load("png/heart3.png"),
+              pygame.image.load("png/heart4.png"), pygame.image.load("png/heart5.png")]
+
 
 
 
@@ -71,6 +76,7 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
         self.attacking = False
         self.attack_frame = 0
         self.cooldown = False
+        self.health = 5
 
     def move(self):
 
@@ -153,6 +159,16 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
             pygame.time.set_timer(hit_cooldown, 1000)  # Resets cooldown in 1 second
 
             print("hit")
+            self.health = self.health - 1
+            health.image = health_ani[self.health]
+
+            if self.health <= 0:
+                self.kill()
+                """
+                 display_update() function is an optional feature, used for when you want to update the screen immediately 
+                 instead of waiting for the game loop
+                """
+                pygame.display.update()
             pygame.display.update()
     def jump(self):
         self.rect.x += 1
@@ -249,11 +265,33 @@ class EventHandler():
         self.battle = True
         # Empty for now
 
+class StageDisplay(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.headingfont = pygame.font.SysFont('notosansmono', 30)
+        self.text = self.headingfont.render("STAGE: " + str(handler.stage), True, (0,0,0))
+        self.rect = self.text.get_rect()
+        self.posx = -100 # -100” position on the x-axis. This keeps it safely out of the window
+        self.posy = 100
+        self.display = False
+
+    def move_display(self): # is incharge of “moving” the display across the screen
+        # Create the text to be displayed
+        self.text = self.headingfont.render("STAGE: " + str(handler.stage), True, (0,0,0))
+        if self.posx < 700:
+            self.posx += 5
+            displaysurface.blit(self.text, (self.posx, self.posy))
+        else:
+            self.display = False
+            self.kill()
+
 background = Background()
 ground = Ground()
 player = Player()
 castle = Castle()
 handler = EventHandler()
+stage_display = StageDisplay()
+health = HealthBar()
 # enemy = Enemy()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
@@ -262,6 +300,8 @@ ground_group.add(ground)
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
+
+font = pygame.font.get_fonts()
 while True:
     player.gravity_check()
     player.update()
@@ -282,10 +322,11 @@ while True:
     render the player after the castle. 
     Otherwise if you move the Player over to castle, the castle will render itself over the Player, hiding it.
     """
-    displaysurface.blit(player.image, player.rect) # rect stores a pair coordinates
-    #enemy.update()
-    #enemy.move()
-    #enemy.render()
+    if player.health > 0:
+        displaysurface.blit(player.image, player.rect)
+    health.render() # rect stores a pair coordinates
+    if stage_display.display == True:
+        stage_display.move_display()
     for entity in enemies: # spawns enemies
         entity.update()
         entity.move()
@@ -324,6 +365,10 @@ while True:
             if event.key == pygame.K_n:
                 if handler.battle == True and len(enemies) == 0: # the player must be in dungeon and there must be 0 enemies
                     handler.next_stage() # advance to the next stage
+                    stage_display = StageDisplay()
+                    stage_display.display = True
+                    # Render stage display
+
 
 
             if event.key == pygame.K_SPACE:
@@ -335,4 +380,9 @@ while True:
                 player.update()
 
     FPS_CLOCK.tick(FPS) # limits fps to 60
-    pygame.display.update() # Changes in the game are not implemented until the pygame.display.update() function has been called. This function is responsible for updating your game window with any changes that have been made within that specific iteration of the game loop.
+
+    """
+    # Changes in the game are not implemented until the pygame.display.update() function has been called. 
+    This function is responsible for updating your game window with any changes that have been made within that specific iteration of the game loop.
+    """
+    pygame.display.update()

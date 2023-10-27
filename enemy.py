@@ -47,8 +47,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.rect.center = self.pos  #  If not for this, the “rect” of the enemy would be left behind at the initial spawn point and collisions would not occur accurately
 
-    def update(self):
-        # Checks for collision with the Player
+    def update(self):  # Checks for collision with the Player
+
         hits = pygame.sprite.spritecollide(self, main.playergroup, False)
 
         """If the player is currently in an attack mode, it means that the collision has occurred due to the player’s attack. 
