@@ -5,6 +5,9 @@ from background import Background
 from castle import Castle
 from ground import Ground
 from enemy import Enemy
+from tkinter import Tk, Button
+
+
 pygame.init()  # Begin pygame
 
 # Declaring variables to be used through the program
@@ -192,11 +195,65 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
                     self.vel.y = 0 # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
 
+class EventHandler():
+    def __init__(self):
+
+        self.stage = 1
+        self.enemy_count = 0
+        self.battle = False
+        self.enemy_generation = pygame.USEREVENT + 2
+
+        self.stage_enemies = [] # enemies generation
+        for x in range(1, 21):
+            self.stage_enemies.append(int((x ** 2 / 2) + 1)) # number of enemies to be generated per level
+
+    def next_stage(self):  # Code for when the next stage is clicked
+        self.stage += 1
+        self.enemy_count = 0
+        print("Stage: " + str(self.stage))
+        # The higher the stage number, the lower the time gap between enemy spawns, meaning harder levels
+        pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage)) # sets the timer for enemy generation
+
+    def stage_handler(self): # starting menu
+        # Code for the Tkinter stage selection window
+        print("stage handler function")
+        self.root = Tk()
+        self.root.geometry('200x170')
+
+        button1 = Button(self.root, text="Twilight Dungeon", width=18, height=2,
+                         command=self.world1)
+        button2 = Button(self.root, text="Skyward Dungeon", width=18, height=2,
+                         command=self.world2)
+        button3 = Button(self.root, text="Hell Dungeon", width=18, height=2,
+                         command=self.world3)
+
+        button1.place(x=40, y=15)
+        button2.place(x=40, y=65)
+        button3.place(x=40, y=115)
+
+        self.root.mainloop()
+
+    def world1(self):
+        print("world1")
+        self.root.destroy()
+        castle.hide = True
+        self.battle = True
+        pygame.time.set_timer(self.enemy_generation, 2000)
+
+
+    def world2(self):
+        self.battle = True
+        # Empty for now
+
+    def world3(self):
+        self.battle = True
+        # Empty for now
 
 background = Background()
 ground = Ground()
 player = Player()
 castle = Castle()
+handler = EventHandler()
 # enemy = Enemy()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
@@ -204,7 +261,7 @@ ground_group = pygame.sprite.Group()
 ground_group.add(ground)
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
-
+enemies = pygame.sprite.Group()
 while True:
     player.gravity_check()
     player.update()
@@ -218,12 +275,21 @@ while True:
     """
     background.render()
     ground.render()
-    
+
+    castle.update()
+
+    """
+    render the player after the castle. 
+    Otherwise if you move the Player over to castle, the castle will render itself over the Player, hiding it.
+    """
     displaysurface.blit(player.image, player.rect) # rect stores a pair coordinates
     #enemy.update()
     #enemy.move()
     #enemy.render()
-    displaysurface.blit(player.image, player.rect)
+    for entity in enemies: # spawns enemies
+        entity.update()
+        entity.move()
+        entity.render()
     for event in pygame.event.get():
         # Will run when the close window button is clicked
         if event.type == QUIT:
@@ -233,6 +299,16 @@ while True:
             # For events that occur upon clicking the mouse (left click)
         if event.type == pygame.MOUSEBUTTONDOWN:
             pass
+        if event.type == handler.enemy_generation:
+            """
+            will keep generating enemies every time the timer for enemy generation is triggered. 
+            However, it will not generate more enemies than what our handler’s stage_enemies variable has defined as the max limit for that stage
+            """
+            if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
+                enemy = Enemy() # create new enemy
+                enemies.add(enemy)
+                handler.enemy_count += 1
+
         """
         It’s important to call the timer again with a time duration of 0.
          This automatically disables it. Otherwise it could keep calling itself every second wasting resources.
@@ -242,6 +318,14 @@ while True:
             pygame.time.set_timer(hit_cooldown, 0)
         # Event handling for a range of different key presses
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_e and 450 < player.rect.x < 550:
+                print("stage handler IF") # the player must press E and must be standing near the entrance of the castle
+                handler.stage_handler() # shows dungeons
+            if event.key == pygame.K_n:
+                if handler.battle == True and len(enemies) == 0: # the player must be in dungeon and there must be 0 enemies
+                    handler.next_stage() # advance to the next stage
+
+
             if event.key == pygame.K_SPACE:
                 player.jump()
             if event.key == pygame.K_RETURN:
