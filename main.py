@@ -6,14 +6,15 @@ from castle import Castle
 from ground import Ground
 from enemy import Enemy
 from tkinter import Tk, Button
-
 from healthbar import HealthBar
+from stagedisplay import StageDisplay
 from statusbar import StatusBar
+from pbutton import PButton
 
 pygame.init()  # Begin pygame
 
 # Declaring variables to be used through the program
-vec = pygame.math.Vector2 # used to record X and Y position of the player
+vec = pygame.math.Vector2  # used to record X and Y position of the player
 HEIGHT = 350
 WIDTH = 730
 ACC = 0.3
@@ -21,9 +22,9 @@ FRIC = -0.10
 FPS = 60
 FPS_CLOCK = pygame.time.Clock()
 COUNT = 0
-hit_cooldown = pygame.USEREVENT + 1 # need to create a new custom event
-displaysurface = pygame.display.set_mode((WIDTH, HEIGHT)) # displays the game using width and height
-pygame.display.set_caption("Game") # changes window's title
+hit_cooldown = pygame.USEREVENT + 1  # need to create a new custom event
+displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))  # displays the game using width and height
+pygame.display.set_caption("Game")  # changes window's title
 
 run_ani_R = [pygame.image.load("png/Player_Sprite_R.png"), pygame.image.load("png/Player_Sprite2_R.png"),
              pygame.image.load("png/Player_Sprite3_R.png"), pygame.image.load("png/Player_Sprite4_R.png"),
@@ -57,9 +58,7 @@ health_ani = [pygame.image.load("png/heart0.png"), pygame.image.load("png/heart.
               pygame.image.load("png/heart4.png"), pygame.image.load("png/heart5.png")]
 
 
-
-
-class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite class
+class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite class
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("png/Player_Sprite_R.png")
@@ -67,13 +66,13 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
 
         # Position and direction
         self.vx = 0
-        self.pos = vec((340, 240)) # position of the player
-        self.vel = vec(0, 0) # velocity of the player
-        self.acc = vec(0, 0) # acceleration of the player
-        self.direction = "RIGHT" # used to store the current direction of the Player
+        self.pos = vec((340, 240))  # position of the player
+        self.vel = vec(0, 0)  # velocity of the player
+        self.acc = vec(0, 0)  # acceleration of the player
+        self.direction = "RIGHT"  # used to store the current direction of the Player
         self.jumping = False
         self.running = False
-        self.move_frame = 0 # track the current frame of the character being displayed
+        self.move_frame = 0  # track the current frame of the character being displayed
         self.attacking = False
         self.attack_frame = 0
         self.cooldown = False
@@ -83,14 +82,14 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
 
     def move(self):
 
-        self.acc = vec(0, 0.5) # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
+        self.acc = vec(0, 0.5)  # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
         # Will set running to False if the player has slowed down to a certain extent
-        if abs(self.vel.x) > 0.3: #use abs() to return the magnitude since the velocity can be in the negative direction (the left direction)
+        if abs(self.vel.x) > 0.3:  # use abs() to return the magnitude since the velocity can be in the negative direction (the left direction)
             self.running = True
         else:
             self.running = False
 
-        pressed_keys = pygame.key.get_pressed() # Returns the current key presses
+        pressed_keys = pygame.key.get_pressed()  # Returns the current key presses
 
         # Accelerates the player in the direction of the key press
         if pressed_keys[K_LEFT]:
@@ -98,8 +97,8 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
         if pressed_keys[K_RIGHT]:
             self.acc.x = ACC
         # Formulas to calculate velocity while accounting for friction
-        self.acc.x += self.vel.x * FRIC # updates object's acceleration
-        self.vel += self.acc # updates object's velocity
+        self.acc.x += self.vel.x * FRIC  # updates object's acceleration
+        self.vel += self.acc  # updates object's velocity
         self.pos += self.vel + 0.5 * self.acc  # Updates Position with new values
         """
         This causes character warping from one point of the screen to the other
@@ -113,7 +112,8 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
 
         self.rect.midbottom = self.pos  # Update rect with new pos
 
-    def update(self): # This function is in charge of changing the movement frame of the Player if he's moving.
+    def update(self):  # This function is in charge of changing the movement frame of the Player if he's moving.
+        if cursor.wait == 1: return
         if self.move_frame > 6:
             self.move_frame = 0
             return
@@ -138,6 +138,7 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
                 self.image = run_ani_L[self.move_frame]
 
     def attack(self):
+        if cursor.wait == 1: return
         if self.attack_frame > 10:
             self.attack_frame = 0
             self.attacking = False
@@ -173,6 +174,7 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
                 """
                 pygame.display.update()
             pygame.display.update()
+
     def jump(self):
         self.rect.x += 1
 
@@ -193,6 +195,7 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
             self.pos.x -= 20
         if self.attack_frame == 10:
             self.pos.x += 20
+
     def gravity_check(self):
         # takes three parameters, the sprite to be tested, and secondly the sprite group against which the sprite will be tested.
         # The third parameter takes a True or False value which determines whether to kill the sprite if a collision occurs
@@ -203,16 +206,17 @@ class Player(pygame.sprite.Sprite): # inherits from the pygame.sprite.Sprite cla
         If however he is falling we will proceed.
         """
         if self.vel.y > 0:
-            if hits: # will run if the hits variable recorded a collision between the player and ground
+            if hits:  # will run if the hits variable recorded a collision between the player and ground
                 """
                 selects the first ground object from the list of hits. 
                 The assumption here is that the first ground object in the list is the one closest to the player's current position along the y-axis.
                 """
                 lowest = hits[0]
-                if self.pos.y < lowest.rect.bottom: #checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
-                    self.pos.y = lowest.rect.top + 1 # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
-                    self.vel.y = 0 # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
+                if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
+                    self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
+                    self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
+
 
 class EventHandler():
     def __init__(self):
@@ -223,25 +227,46 @@ class EventHandler():
         self.battle = False
         self.enemy_generation = pygame.USEREVENT + 2
 
-        self.stage_enemies = [] # enemies generation
+        self.stage_enemies = []  # enemies generation
         for x in range(1, 21):
-            self.stage_enemies.append(int((x ** 2 / 2) + 1)) # number of enemies to be generated per level
+            self.stage_enemies.append(int((x ** 2 / 2) + 1))  # number of enemies to be generated per level
 
     def next_stage(self):  # Code for when the next stage is clicked
+        button.imgdisp = 1  # This ensures that the button is converted to Pause/Play mode when a world begins
         self.stage += 1
         self.enemy_count = 0
         self.dead_enemy_count = 0
         print("Stage: " + str(self.stage))
         # The higher the stage number, the lower the time gap between enemy spawns, meaning harder levels
-        pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage)) # sets the timer for enemy generation
+        pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage))  # sets the timer for enemy generation
 
     def update(self):
-        if self.dead_enemy_count == self.stage_enemies[self.stage - 1]: # if all the enemies have been killed
-            self.dead_enemy_count = 0 # resets the counter
-            stage_display.clear = True # the text can now be displayed
-            stage_display.stage_clear() # shows stage clear when there are no more enemies
+        if self.dead_enemy_count == self.stage_enemies[self.stage - 1]:  # if all the enemies have been killed
+            self.dead_enemy_count = 0  # resets the counter
+            stage_display.clear = True  # the text can now be displayed
+            stage_display.stage_clear()  # shows stage clear when there are no more enemies
 
-    def stage_handler(self): # starting menu
+    def home(self):
+        # Reset Battle code
+        pygame.time.set_timer(self.enemy_generation, 0) # disables enemies generation
+        self.battle = False
+        self.enemy_count = 0
+        self.dead_enemy_count = 0
+        self.stage = 1
+
+        # Destroy any enemies or items lying around
+        for group in enemies:  # , items
+            for entity in group:
+                entity.kill()
+
+        # Bring back normal backgrounds
+        castle.hide = False
+        background.bgimage = pygame.image.load("png/Background.png")
+        ground.image = pygame.image.load("png/Ground.png")
+        button.render(button.imgdisp) # renders home or pause button
+        cursor.hover()
+
+    def stage_handler(self):  # starting menu
         # Code for the Tkinter stage selection window
         print("stage handler function")
         self.root = Tk()
@@ -262,50 +287,48 @@ class EventHandler():
 
     def world1(self):
         print("world1")
+
         self.root.destroy()
         castle.hide = True
         self.battle = True
+        button.imgdisp = 1
         pygame.time.set_timer(self.enemy_generation, 2000)
-
 
     def world2(self):
         self.battle = True
+        button.imgdisp = 1
         # Empty for now
 
     def world3(self):
         self.battle = True
+        button.imgdisp = 1
         # Empty for now
 
-class StageDisplay(pygame.sprite.Sprite):
+
+class Cursor(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.headingfont = pygame.font.SysFont('notosansmono', 30)
-        self.stageclearfont = pygame.font.SysFont('notosansmono', 30)
-        self.posx = -100 # -100” position on the x-axis. This keeps it safely out of the window
-        self.posy = 100
-        self.display = False
-        self.clear = False
+        self.image = pygame.image.load("png/cursor.png")
+        self.rect = self.image.get_rect()
+        self.wait = 0
 
-    def move_display(self): # is incharge of “moving” the display across the screen
-        # Create the text to be displayed
-        self.text = self.headingfont.render("STAGE: " + str(handler.stage), True, (0,0,0))
-        if self.posx < 700:
-            self.posx += 5
-            displaysurface.blit(self.text, (self.posx, self.posy))
+    def pause(self):
+        if self.wait == 1:  # resume game
+            self.wait = 0  # pause game
         else:
-            self.display = False
-            self.posx = -100 # gtfo text
-            self.posy = 100
+            self.wait = 1
 
-    def stage_clear(self):
-        self.text = self.stageclearfont.render("STAGE CLEAR!", True, (0,0,0))
-        if self.posx < 720:
-            self.posx += 5
-            displaysurface.blit(self.text, (self.posx, self.posy))
+    def hover(self):  # responsible for the change in the cursor when hovering over the button
+        if 620 <= mouse[0] <= 670 and 300 <= mouse[1] <= 345:
+            """
+            set the current cursor’s visibility to “off” (Line 3). We’ll then replace it with our own cursor
+            """
+            pygame.mouse.set_visible(False)
+            cursor.rect.center = pygame.mouse.get_pos()  # update position
+            displaysurface.blit(cursor.image, cursor.rect)
         else:
-            self.clear = False
-            self.posx = -100
-            self.posy = 100
+            pygame.mouse.set_visible(True)
+
 
 background = Background()
 ground = Ground()
@@ -315,7 +338,8 @@ handler = EventHandler()
 stage_display = StageDisplay()
 health = HealthBar()
 status_bar = StatusBar()
-
+cursor = Cursor()
+button = PButton()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
@@ -323,10 +347,11 @@ ground_group.add(ground)
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
-
 font = pygame.font.get_fonts()
+
 while True:
     player.gravity_check()
+    mouse = pygame.mouse.get_pos()  # stores a list of two values, the first being the x-coordinate, and the second being the y-coordinate
     player.update()
 
     if player.attacking == True:
@@ -338,7 +363,8 @@ while True:
     """
     background.render()
     ground.render()
-
+    button.render(button.imgdisp)
+    cursor.hover()
     castle.update()
 
     """
@@ -347,7 +373,7 @@ while True:
     """
     if player.health > 0:
         displaysurface.blit(player.image, player.rect)
-    health.render() # rect stores a pair coordinates
+    health.render()  # rect stores a pair coordinates
     if stage_display.display == True:
         stage_display.move_display()
     if stage_display.clear == True:
@@ -360,7 +386,7 @@ while True:
     status_bar.update_draw()
     handler.update()
 
-    for entity in enemies: # spawns enemies
+    for entity in enemies:  # spawns enemies
         entity.update()
         entity.move()
         entity.render()
@@ -372,14 +398,18 @@ while True:
 
             # For events that occur upon clicking the mouse (left click)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pass
+            if 620 <= mouse[0] <= 670 and 300 <= mouse[1] <= 345:
+                if button.imgdisp == 1: # if it shows the pause button
+                    cursor.pause()
+                elif button.imgdisp == 0: # if it shows the home button
+                    handler.home()
         if event.type == handler.enemy_generation:
             """
             will keep generating enemies every time the timer for enemy generation is triggered. 
             However, it will not generate more enemies than what our handler’s stage_enemies variable has defined as the max limit for that stage
             """
             if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
-                enemy = Enemy() # create new enemy
+                enemy = Enemy()  # create new enemy
                 enemies.add(enemy)
                 handler.enemy_count += 1
 
@@ -391,18 +421,18 @@ while True:
             player.cooldown = False
             pygame.time.set_timer(hit_cooldown, 0)
         # Event handling for a range of different key presses
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and cursor.wait == 0:
             if event.key == pygame.K_e and 450 < player.rect.x < 550:
-                print("stage handler IF") # the player must press E and must be standing near the entrance of the castle
-                handler.stage_handler() # shows dungeons
+                print(
+                    "stage handler IF")  # the player must press E and must be standing near the entrance of the castle
+                handler.stage_handler()  # shows dungeons
             if event.key == pygame.K_n:
-                if handler.battle == True and len(enemies) == 0: # the player must be in dungeon and there must be 0 enemies
-                    handler.next_stage() # advance to the next stage
+                if handler.battle == True and len(
+                        enemies) == 0:  # the player must be in dungeon and there must be 0 enemies
+                    handler.next_stage()  # advance to the next stage
                     stage_display = StageDisplay()
                     stage_display.display = True
                     # Render stage display
-
-
 
             if event.key == pygame.K_SPACE:
                 player.jump()
@@ -412,7 +442,7 @@ while True:
                     player.attacking = True
                 player.update()
 
-    FPS_CLOCK.tick(FPS) # limits fps to 60
+    FPS_CLOCK.tick(FPS)  # limits fps to 60
 
     """
     # Changes in the game are not implemented until the pygame.display.update() function has been called. 
