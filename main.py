@@ -294,7 +294,7 @@ class StageDisplay(pygame.sprite.Sprite):
             displaysurface.blit(self.text, (self.posx, self.posy))
         else:
             self.display = False
-            self.posx = -100
+            self.posx = -100 # gtfo text
             self.posy = 100
 
     def stage_clear(self):

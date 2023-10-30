@@ -19,10 +19,10 @@ class Enemy(pygame.sprite.Sprite):
         self.vel.x = random.randint(2, 6) / 2  # Randomized velocity of the generated enemy
         self.mana = random.randint(1, 3)  # the enemy will drop a random amount of mana
         # Sets the initial position of the enemy
-        if self.direction == 0: # it spawns to the left
+        if self.direction == 0: # it spawns to the left, goes to the right
             self.pos.x = 0
             self.pos.y = 235
-        if self.direction == 1: # it spawns to the right
+        if self.direction == 1: # it spawns to the right, goes to the left
             self.pos.x = 700
             self.pos.y = 235
 
@@ -54,9 +54,15 @@ class Enemy(pygame.sprite.Sprite):
         """If the player is currently in an attack mode, it means that the collision has occurred due to the player’s attack. 
         Thus, we kill off the enemy sprite using the kill() command."""
         if hits and main.player.attacking == True:
+            if self.direction == 0 and main.player.direction == "LEFT": # knockback to the left
+                self.pos.x -= 40
+                self.rect.center = self.pos
+            elif self.direction == 1 and main.player.direction == "RIGHT": # knockback to the right
+                self.pos.x += 40
+                self.rect.center = self.pos
             if main.player.mana < 100: # limit the mana to 100
                 main.player.mana += self.mana # add the dropped mana to the player
-            self.kill()
+            #self.kill()
             main.handler.dead_enemy_count += 1 # increments the dead_enemy_count variable when the kill() command is being called.
             print("Enemy killed")
 
