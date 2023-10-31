@@ -7,6 +7,7 @@ from ground import Ground
 from enemy import Enemy
 from tkinter import Tk, Button
 from healthbar import HealthBar
+from item import Item
 from stagedisplay import StageDisplay
 from statusbar import StatusBar
 from pbutton import PButton
@@ -340,6 +341,7 @@ health = HealthBar()
 status_bar = StatusBar()
 cursor = Cursor()
 button = PButton()
+
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
@@ -347,6 +349,7 @@ ground_group.add(ground)
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
+items = pygame.sprite.Group()
 font = pygame.font.get_fonts()
 
 while True:
@@ -390,6 +393,9 @@ while True:
         entity.update()
         entity.move()
         entity.render()
+    for itm in items:
+        itm.render()
+        itm.update()
     for event in pygame.event.get():
         # Will run when the close window button is clicked
         if event.type == QUIT:

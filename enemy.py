@@ -1,7 +1,8 @@
 import random
 import pygame
-
+import numpy
 import main
+
 
 HEIGHT = 350
 WIDTH = 730
@@ -14,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = vec(0, 0)
         self.vel = vec(0, 0)
-        self.enemy_hp = 3
+        self.enemy_hp = 2
         self.direction = random.randint(0, 1)  # 0 for Right, 1 for Left
         self.vel.x = random.randint(2, 6) / 2  # Randomized velocity of the generated enemy
         self.mana = random.randint(1, 3)  # the enemy will drop a random amount of mana
@@ -68,6 +69,19 @@ class Enemy(pygame.sprite.Sprite):
 
 
         if self.enemy_hp == 0:
+            rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
+            item_no = 0
+            if rand_num >= 0 and rand_num <= 5:  # 6% chance of a health drop
+                item_no = 1
+            elif rand_num > 5 and rand_num <= 15: # 10% chance of a money drop
+                item_no = 2
+            if item_no != 0:
+                # Add Item to Items group
+                item = main.Item(item_no) # create health/money item
+                main.items.add(item) # add the item to the items group
+                # Sets the item location to the location of the killed enemy
+                item.posx = self.pos.x
+                item.posy = self.pos.y
             if main.player.mana < 100: # limit the mana to 100
                 main.player.mana += self.mana # add the dropped mana to the player
             self.kill()
