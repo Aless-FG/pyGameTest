@@ -8,6 +8,7 @@ from enemy import Enemy
 from tkinter import Tk, Button
 from healthbar import HealthBar
 from item import Item
+from fireball import Fireball
 from stagedisplay import StageDisplay
 from statusbar import StatusBar
 from pbutton import PButton
@@ -62,6 +63,7 @@ health_ani = [pygame.image.load("png/heart0.png"), pygame.image.load("png/heart.
 class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite class
     def __init__(self):
         super().__init__()
+
         self.image = pygame.image.load("png/Player_Sprite_R.png")
         self.rect = self.image.get_rect()
 
@@ -78,8 +80,9 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.attack_frame = 0
         self.cooldown = False
         self.health = 5
-        self.mana = 0
+        self.mana = 90
         self.xp = 0
+        self.magic_cooldown = 1 # the player can use a fireball
 
     def move(self):
 
@@ -350,7 +353,11 @@ playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
 items = pygame.sprite.Group()
+fireballs = pygame.sprite.Group()
 font = pygame.font.get_fonts()
+
+
+
 
 while True:
     player.gravity_check()
@@ -396,6 +403,10 @@ while True:
     for itm in items:
         itm.render()
         itm.update()
+
+    for fb in fireballs:
+        fb.fire()
+
     for event in pygame.event.get():
         # Will run when the close window button is clicked
         if event.type == QUIT:
@@ -433,8 +444,7 @@ while True:
                     "stage handler IF")  # the player must press E and must be standing near the entrance of the castle
                 handler.stage_handler()  # shows dungeons
             if event.key == pygame.K_n:
-                if handler.battle == True and len(
-                        enemies) == 0:  # the player must be in dungeon and there must be 0 enemies
+                if handler.battle == True and len(enemies) == 0:  # the player must be in dungeon and there must be 0 enemies
                     handler.next_stage()  # advance to the next stage
                     stage_display = StageDisplay()
                     stage_display.display = True
@@ -442,6 +452,12 @@ while True:
 
             if event.key == pygame.K_SPACE:
                 player.jump()
+            if event.key == pygame.K_m: # use m key to fire (no cooldown is more fun :) )
+                if player.mana >= 6: # it costs 6 mana to fire
+                    player.mana -= 6
+                    player.attacking = True
+                    fireball = Fireball()
+                    fireballs.add(fireball)
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:
                     player.attack()

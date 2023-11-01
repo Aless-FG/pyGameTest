@@ -49,10 +49,11 @@ class Enemy(pygame.sprite.Sprite):
 
         self.rect.center = self.pos  #  If not for this, the “rect” of the enemy would be left behind at the initial spawn point and collisions would not occur accurately
 
-    def update(self):  # Checks for collision with the Player
-
+    def update(self):
+        # Checks for collision with the Player
         hits = pygame.sprite.spritecollide(self, main.playergroup, False)
-
+        # Checks for collision with Fireballs
+        f_hits = pygame.sprite.spritecollide(self, main.fireballs, False)
         """If the player is currently in an attack mode, it means that the collision has occurred due to the player’s attack. 
         Thus, we kill off the enemy sprite using the kill() command."""
         if hits and main.player.attacking == True:
@@ -66,7 +67,8 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.center = self.pos
                 self.enemy_hp -= 1
                 print("Enemy hit")
-
+        if f_hits:
+            self.enemy_hp == 0
 
         if self.enemy_hp == 0:
             rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
