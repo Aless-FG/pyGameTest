@@ -68,10 +68,10 @@ class Enemy(pygame.sprite.Sprite):
                 self.enemy_hp -= 1
                 print("Enemy hit")
         if f_hits:
-            self.enemy_hp == 0
+            self.enemy_hp = 0
 
         if self.enemy_hp == 0:
-            rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
+            rand_num = numpy.random.uniform(0, 100) #  random.uniform has uniform spread
             item_no = 0
             if rand_num >= 0 and rand_num <= 5:  # 6% chance of a health drop
                 item_no = 1
