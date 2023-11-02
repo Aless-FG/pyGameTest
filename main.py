@@ -12,7 +12,6 @@ from fireball import Fireball
 from stagedisplay import StageDisplay
 from statusbar import StatusBar
 from pbutton import PButton
-from enemy2 import Enemy2
 
 pygame.init()  # Begin pygame
 
@@ -230,9 +229,8 @@ class EventHandler():
         self.enemy_count = 0
         self.dead_enemy_count = 0
         self.battle = False
-        self.enemy_generation = pygame.USEREVENT + 2 # generates enemies in world 1
-        self.enemy_generation2 = pygame.USEREVENT + 3 # generates enemies in world 2
-        self.world = 0
+        self.enemy_generation = pygame.USEREVENT + 2
+
         self.stage_enemies = []  # enemies generation
         for x in range(1, 21):
             self.stage_enemies.append(int((x ** 2 / 2) + 1))  # number of enemies to be generated per level
@@ -244,10 +242,8 @@ class EventHandler():
         self.dead_enemy_count = 0
         print("Stage: " + str(self.stage))
         # The higher the stage number, the lower the time gap between enemy spawns, meaning harder levels
-        if self.world == 1:
-            pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage))  # sets the timer for enemy generation
-        elif self.world == 2:
-            pygame.time.set_timer(self.enemy_generation2, 1500 - (50 * self.stage))
+        pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage))  # sets the timer for enemy generation
+
     def update(self):
         if self.dead_enemy_count == self.stage_enemies[self.stage - 1]:  # if all the enemies have been killed
             self.dead_enemy_count = 0  # resets the counter
@@ -256,13 +252,11 @@ class EventHandler():
 
     def home(self):
         # Reset Battle code
-        pygame.time.set_timer(self.enemy_generation, 0) # disables enemies generation (world 1)
-        pygame.time.set_timer(self.enemy_generation2, 0)  # disables enemies generation (world 2)
+        pygame.time.set_timer(self.enemy_generation, 0) # disables enemies generation
         self.battle = False
         self.enemy_count = 0
         self.dead_enemy_count = 0
-        self.stage = 0
-        self.world = 0
+        self.stage = 1
 
         # Destroy any enemies or items lying around
         for group in enemies:  # , items
@@ -297,7 +291,7 @@ class EventHandler():
 
     def world1(self):
         print("world1")
-        self.world = 1
+
         self.root.destroy()
         castle.hide = True
         self.battle = True
@@ -305,14 +299,9 @@ class EventHandler():
         pygame.time.set_timer(self.enemy_generation, 2000)
 
     def world2(self):
-        self.root.destroy()
-        background.bgimage = pygame.image.load("png/desert.jpg")
-        ground.image = pygame.image.load("png/desert_ground.png")
-        pygame.time.set_timer(self.enemy_generation2, 2500)
-        self.world = 2
-        button.imgdisp = 1
-        castle.hide = True
         self.battle = True
+        button.imgdisp = 1
+        # Empty for now
 
     def world3(self):
         self.battle = True
@@ -363,7 +352,6 @@ ground_group.add(ground)
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
-enemies2 = pygame.sprite.Group()
 items = pygame.sprite.Group()
 fireballs = pygame.sprite.Group()
 font = pygame.font.get_fonts()
@@ -408,14 +396,10 @@ while True:
     status_bar.update_draw()
     handler.update()
 
-    for entity in enemies:  # spawns enemies of world 1
+    for entity in enemies:  # spawns enemies
         entity.update()
         entity.move()
         entity.render()
-    for entity2 in enemies2:  # spawns enemies of world 1
-        entity2.update()
-        entity2.move()
-        entity2.render()
     for itm in items:
         itm.render()
         itm.update()
@@ -436,7 +420,7 @@ while True:
                     cursor.pause()
                 elif button.imgdisp == 0: # if it shows the home button
                     handler.home()
-        if event.type == handler.enemy_generation: # first world
+        if event.type == handler.enemy_generation:
             """
             will keep generating enemies every time the timer for enemy generation is triggered. 
             However, it will not generate more enemies than what our handler’s stage_enemies variable has defined as the max limit for that stage
@@ -444,11 +428,6 @@ while True:
             if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
                 enemy = Enemy()  # create new enemy
                 enemies.add(enemy)
-                handler.enemy_count += 1
-        if event.type == handler.enemy_generation2: # second world
-            if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
-                enemy2 = Enemy2()  # create new enemy
-                enemies2.add(enemy2)
                 handler.enemy_count += 1
 
         """
@@ -465,18 +444,11 @@ while True:
                     "stage handler IF")  # the player must press E and must be standing near the entrance of the castle
                 handler.stage_handler()  # shows dungeons
             if event.key == pygame.K_n:
-                if handler.world == 1:
-                    if handler.battle == True and len(enemies) == 0:  # the player must be in world 2 and there must be 0 enemies
-                        handler.next_stage()  # advance to the next stage
-                        stage_display = StageDisplay()
-                        stage_display.display = True
-                        # Render stage display
-                elif handler.world == 2:
-                    if handler.battle == True and len(enemies2) == 0:  # the player must be in world 2 and there must be 0 enemies
-                        handler.next_stage()  # advance to the next stage
-                        stage_display = StageDisplay()
-                        stage_display.display = True
-                        # Render stage display
+                if handler.battle == True and len(enemies) == 0:  # the player must be in dungeon and there must be 0 enemies
+                    handler.next_stage()  # advance to the next stage
+                    stage_display = StageDisplay()
+                    stage_display.display = True
+                    # Render stage display
 
             if event.key == pygame.K_SPACE:
                 player.jump()
