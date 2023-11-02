@@ -483,6 +483,7 @@ while True:
             if event.key == pygame.K_m: # use m key to fire (no cooldown is more fun :) )
                 if player.mana >= 6: # it costs 6 mana to fire
                     player.mana -= 6
+
                     player.attacking = True
                     fireball = Fireball()
                     fireballs.add(fireball)
