@@ -9,6 +9,7 @@ from tkinter import Tk, Button
 from healthbar import HealthBar
 from item import Item
 from fireball import Fireball
+from pform import Platform
 from stagedisplay import StageDisplay
 from statusbar import StatusBar
 from pbutton import PButton
@@ -32,36 +33,36 @@ hit_cooldown = pygame.USEREVENT + 1  # need to create a new custom event
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))  # displays the game using width and height
 pygame.display.set_caption("Game")  # changes window's title
 
-run_ani_R = [pygame.image.load("png/Player_Sprite_R.png"), pygame.image.load("png/Player_Sprite2_R.png"),
-             pygame.image.load("png/Player_Sprite3_R.png"), pygame.image.load("png/Player_Sprite4_R.png"),
-             pygame.image.load("png/Player_Sprite5_R.png"), pygame.image.load("png/Player_Sprite6_R.png"),
-             pygame.image.load("png/Player_Sprite_R.png")]
+run_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite2_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite3_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite4_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite5_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite6_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite_R.png").convert_alpha()]
 
 # Run animation for the LEFT
-run_ani_L = [pygame.image.load("png/Player_Sprite_L.png"), pygame.image.load("png/Player_Sprite2_L.png"),
-             pygame.image.load("png/Player_Sprite3_L.png"), pygame.image.load("png/Player_Sprite4_L.png"),
-             pygame.image.load("png/Player_Sprite5_L.png"), pygame.image.load("png/Player_Sprite6_L.png"),
-             pygame.image.load("png/Player_Sprite_L.png")]
+run_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite2_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite3_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite4_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite5_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite6_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite_L.png").convert_alpha()]
 
 # Attack animation for the RIGHT
-attack_ani_R = [pygame.image.load("png/Player_Sprite_R.png"), pygame.image.load("png/Player_Attack_R.png"),
-                pygame.image.load("png/Player_Attack2_R.png"), pygame.image.load("png/Player_Attack2_R.png"),
-                pygame.image.load("png/Player_Attack3_R.png"), pygame.image.load("png/Player_Attack3_R.png"),
-                pygame.image.load("png/Player_Attack4_R.png"), pygame.image.load("png/Player_Attack4_R.png"),
-                pygame.image.load("png/Player_Attack5_R.png"), pygame.image.load("png/Player_Attack5_R.png"),
-                pygame.image.load("png/Player_Sprite_R.png")]
+attack_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(), pygame.image.load("png/Player_Attack_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_R.png").convert_alpha(), pygame.image.load("png/Player_Attack2_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_R.png").convert_alpha(), pygame.image.load("png/Player_Attack3_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_R.png").convert_alpha(), pygame.image.load("png/Player_Attack4_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_R.png").convert_alpha(), pygame.image.load("png/Player_Attack5_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Sprite_R.png").convert_alpha()]
 
 # Attack animation for the LEFT
-attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png"), pygame.image.load("png/Player_Attack_L.png"),
-                pygame.image.load("png/Player_Attack2_L.png"), pygame.image.load("png/Player_Attack2_L.png"),
-                pygame.image.load("png/Player_Attack3_L.png"), pygame.image.load("png/Player_Attack3_L.png"),
-                pygame.image.load("png/Player_Attack4_L.png"), pygame.image.load("png/Player_Attack4_L.png"),
-                pygame.image.load("png/Player_Attack5_L.png"), pygame.image.load("png/Player_Attack5_L.png"),
-                pygame.image.load("png/Player_Sprite_L.png")]
+attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(), pygame.image.load("png/Player_Attack_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_L.png").convert_alpha(), pygame.image.load("png/Player_Attack2_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_L.png").convert_alpha(), pygame.image.load("png/Player_Attack3_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_L.png").convert_alpha(), pygame.image.load("png/Player_Attack4_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_L.png").convert_alpha(), pygame.image.load("png/Player_Attack5_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Sprite_L.png").convert_alpha()]
 
-health_ani = [pygame.image.load("png/heart0.png"), pygame.image.load("png/heart.png"),
-              pygame.image.load("png/heart2.png"), pygame.image.load("png/heart3.png"),
-              pygame.image.load("png/heart4.png"), pygame.image.load("png/heart5.png")]
+health_ani = [pygame.image.load("png/heart0.png").convert_alpha(), pygame.image.load("png/heart.png").convert_alpha(),
+              pygame.image.load("png/heart2.png").convert_alpha(), pygame.image.load("png/heart3.png").convert_alpha(),
+              pygame.image.load("png/heart4.png").convert_alpha(), pygame.image.load("png/heart5.png").convert_alpha()]
 
 # Music and Sound
 soundtrack = ["tracks/background_village.wav", "tracks/battle_music.wav", "tracks/gameover.wav"]
@@ -224,7 +225,8 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
     def gravity_check(self):
         # takes three parameters, the sprite to be tested, and secondly the sprite group against which the sprite will be tested.
         # The third parameter takes a True or False value which determines whether to kill the sprite if a collision occurs
-        hits = pygame.sprite.spritecollide(player, ground_group, False)
+        hits = pygame.sprite.spritecollide(self, ground_group, False)
+        pl_hits = pygame.sprite.spritecollide(self, platform_group, False)
         """
         check whether the player has any velocity in the downwards direction. 
         If he doesn’t, then all is good (because he isn’t falling and thus is on the ground). 
@@ -232,11 +234,18 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         """
         if self.vel.y > 0:
             if hits:  # will run if the hits variable recorded a collision between the player and ground
+
                 """
                 selects the first ground object from the list of hits. 
                 The assumption here is that the first ground object in the list is the one closest to the player's current position along the y-axis.
                 """
                 lowest = hits[0]
+                if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
+                    self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
+                    self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
+                    self.jumping = False
+            elif pl_hits:
+                lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
                     self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
@@ -332,6 +341,7 @@ class EventHandler():
         pygame.time.set_timer(self.enemy_generation2, 2500)
         self.world = 2
         button.imgdisp = 1
+        p1.hide = False
         castle.hide = True
         self.battle = True
         mmanager.playsoundtrack(soundtrack[1], -1, 0.05)
@@ -377,11 +387,14 @@ health = HealthBar()
 status_bar = StatusBar()
 cursor = Cursor()
 button = PButton()
-
+p1 = Platform()
 # Sprite groups are used to manage and update multiple sprites simultaneously.
 # the collision detection functions that detect collisions requires a Sprite group as a parameter
 ground_group = pygame.sprite.Group()
 ground_group.add(ground)
+platform_group = pygame.sprite.Group()
+platform_group.add(p1)
+
 playergroup = pygame.sprite.Group()
 playergroup.add(player)
 enemies = pygame.sprite.Group()
@@ -411,6 +424,7 @@ while True:
     button.render(button.imgdisp)
     cursor.hover()
     castle.update()
+    p1.render()
 
     """
     render the player after the castle. 
@@ -511,7 +525,9 @@ while True:
                     player.mana -= 6
                     player.attacking = True
                     fireball = Fireball()
+
                     fireballs.add(fireball)
+                    ground_group.add(fireball)
                     mmanager.playsound(fireball_sound, 0.3)
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:
