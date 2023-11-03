@@ -7,7 +7,6 @@ from ground import Ground
 from enemy import Enemy
 from tkinter import Tk, Button
 from healthbar import HealthBar
-from item import Item
 from fireball import Fireball
 from pform import Platform
 from stagedisplay import StageDisplay
@@ -132,6 +131,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
 
     def update(self):  # This function is in charge of changing the movement frame of the Player if he's moving.
         if cursor.wait == 1: return
+        pygame.draw.rect(displaysurface, (255, 0, 0), self.rect, 5)
         if self.move_frame > 6:
             self.move_frame = 0
             return
@@ -206,11 +206,14 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
 
         # Check to see if payer is in contact with the ground
         hits = pygame.sprite.spritecollide(self, ground_group, False)
-
+        pl_hits = pygame.sprite.spritecollide(self, platform_group, False)
         self.rect.x -= 1
 
         # If touching the ground, and not currently jumping, cause the player to jump.
         if hits and not self.jumping:
+            self.jumping = True
+            self.vel.y = -12
+        elif pl_hits and not self.jumping:
             self.jumping = True
             self.vel.y = -12
 
@@ -234,7 +237,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         """
         if self.vel.y > 0:
             if hits:  # will run if the hits variable recorded a collision between the player and ground
-
+                self.magic_cooldown = 1
                 """
                 selects the first ground object from the list of hits. 
                 The assumption here is that the first ground object in the list is the one closest to the player's current position along the y-axis.
@@ -244,7 +247,8 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
-            elif pl_hits:
+            elif pl_hits: # player is on a platform
+                self.magic_cooldown = 0
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
                     self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
@@ -425,7 +429,7 @@ while True:
     cursor.hover()
     castle.update()
     p1.render()
-
+    pygame.draw.rect(displaysurface, (255, 0, 255), player.rect, 2)
     """
     render the player after the castle. 
     Otherwise if you move the Player over to castle, the castle will render itself over the Player, hiding it.
@@ -459,6 +463,8 @@ while True:
 
     for fb in fireballs:
         fb.fire()
+        pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2)
+
 
     for b in bolts:
         b.fire()
@@ -520,20 +526,21 @@ while True:
 
             if event.key == pygame.K_SPACE:
                 player.jump()
-            if event.key == pygame.K_m: # use m key to fire (no cooldown is more fun :) )
+            if event.key == pygame.K_m : # use m key to fire (no cooldown is more fun :) )
                 if player.mana >= 6: # it costs 6 mana to fire
                     player.mana -= 6
                     player.attacking = True
                     fireball = Fireball()
-
                     fireballs.add(fireball)
                     ground_group.add(fireball)
+
                     mmanager.playsound(fireball_sound, 0.3)
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:
                     player.attack()
                     player.attacking = True
                 player.update()
+
 
     FPS_CLOCK.tick(FPS)  # limits fps to 60
 
