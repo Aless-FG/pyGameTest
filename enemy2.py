@@ -3,6 +3,8 @@ import pygame
 import main
 import random
 
+from bolt import Bolt
+
 
 class Enemy2(pygame.sprite.Sprite):
     def __init__(self):
@@ -58,7 +60,10 @@ class Enemy2(pygame.sprite.Sprite):
         elif self.direction == 1:
             self.pos.x -= self.vel.x
             self.wait += self.vel.x
-
+        rand_num = numpy.random.uniform(0, 50)
+        if int(rand_num) < 5:
+            bolt = Bolt(self.pos.x, self.pos.y, self.direction)
+            main.bolts.add(bolt)
         """if self.direction_check():
             self.turn()
             self.wait = 90  # the Enemy waits for 90 frames before turning

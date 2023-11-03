@@ -13,7 +13,10 @@ from stagedisplay import StageDisplay
 from statusbar import StatusBar
 from pbutton import PButton
 from enemy2 import Enemy2
+from musicmanager import MusicManager
 
+# freq, size, channel, buffsize
+pygame.mixer.pre_init(44100, 16, 1, 512)
 pygame.init()  # Begin pygame
 
 # Declaring variables to be used through the program
@@ -366,6 +369,7 @@ enemies = pygame.sprite.Group()
 enemies2 = pygame.sprite.Group()
 items = pygame.sprite.Group()
 fireballs = pygame.sprite.Group()
+bolts = pygame.sprite.Group()
 font = pygame.font.get_fonts()
 
 
@@ -412,7 +416,7 @@ while True:
         entity.update()
         entity.move()
         entity.render()
-    for entity2 in enemies2:  # spawns enemies of world 1
+    for entity2 in enemies2:  # spawns enemies of world 2
         entity2.update()
         entity2.move()
         entity2.render()
@@ -422,6 +426,9 @@ while True:
 
     for fb in fireballs:
         fb.fire()
+
+    for b in bolts:
+        b.fire()
 
     for event in pygame.event.get():
         # Will run when the close window button is clicked
