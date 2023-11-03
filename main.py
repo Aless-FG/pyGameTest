@@ -63,7 +63,15 @@ health_ani = [pygame.image.load("png/heart0.png"), pygame.image.load("png/heart.
               pygame.image.load("png/heart2.png"), pygame.image.load("png/heart3.png"),
               pygame.image.load("png/heart4.png"), pygame.image.load("png/heart5.png")]
 
+# Music and Sound
+soundtrack = ["tracks/background_village.wav", "tracks/battle_music.wav", "tracks/gameover.wav"]
+swordtrack = [pygame.mixer.Sound("tracks/sword1.wav"), pygame.mixer.Sound("tracks/sword2.wav"),
+              pygame.mixer.Sound("tracks/sword3.wav"), pygame.mixer.Sound("tracks/sword4.wav")]
+fireball_sound = pygame.mixer.Sound("tracks/fireball_sound.wav")
+enemy_hit = pygame.mixer.Sound("tracks/enemy_hit.wav")
 
+mmanager = MusicManager()
+mmanager.playsoundtrack(soundtrack[0], -1, 0.05) # The second parameter states that it should repeat infinitely
 class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite class
     def __init__(self):
         super().__init__()
@@ -87,6 +95,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.mana = 90
         self.xp = 0
         self.magic_cooldown = 1 # the player can use a fireball
+        self.slash = 0 # needed for the sound effect
 
     def move(self):
 
@@ -151,6 +160,12 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             self.attack_frame = 0
             self.attacking = False
 
+        if self.attack_frame == 0: # ensures that the sound is only played on the first attack frame
+            mmanager.playsound(swordtrack[self.slash], 0.05)
+
+            self.slash += 1
+            if self.slash >= 4:
+                self.slash = 0
             # Check direction for correct animation to display
         if self.direction == "RIGHT":
             self.image = attack_ani_R[self.attack_frame]
@@ -175,6 +190,8 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             health.image = health_ani[self.health]
 
             if self.health <= 0:
+                mmanager.stop()
+                mmanager.playsoundtrack(soundtrack[2], -1, 0.1)
                 self.kill()
                 """
                  display_update() function is an optional feature, used for when you want to update the screen immediately 
@@ -306,6 +323,7 @@ class EventHandler():
         self.battle = True
         button.imgdisp = 1
         pygame.time.set_timer(self.enemy_generation, 2000)
+        mmanager.playsoundtrack(soundtrack[1], -1, 0.05)
 
     def world2(self):
         self.root.destroy()
@@ -316,6 +334,7 @@ class EventHandler():
         button.imgdisp = 1
         castle.hide = True
         self.battle = True
+        mmanager.playsoundtrack(soundtrack[1], -1, 0.05)
 
     def world3(self):
         self.battle = True
@@ -493,6 +512,7 @@ while True:
                     player.attacking = True
                     fireball = Fireball()
                     fireballs.add(fireball)
+                    mmanager.playsound(fireball_sound, 0.3)
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:
                     player.attack()

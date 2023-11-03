@@ -108,6 +108,7 @@ class Enemy2(pygame.sprite.Sprite):
                 item.posy = self.pos.y
             if main.player.mana < 100:  # limit the mana to 100
                 main.player.mana += self.mana  # add the dropped mana to the player
+            main.mmanager.playsound(main.enemy_hit, 0.05)
             self.kill()
             main.handler.dead_enemy_count += 1  # increments the dead_enemy_count variable when the kill() command is being called.
             print("Enemy killed")
