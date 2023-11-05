@@ -2,7 +2,7 @@ import numpy
 import pygame
 import main
 import random
-
+from item import Item
 from bolt import Bolt
 
 
@@ -61,7 +61,7 @@ class Enemy2(pygame.sprite.Sprite):
             self.pos.x -= self.vel.x
             self.wait += self.vel.x
         rand_num = numpy.random.uniform(0, 50)
-        if int(rand_num) < 5:
+        if int(rand_num) < 1:
             bolt = Bolt(self.pos.x, self.pos.y, self.direction)
             main.bolts.add(bolt)
         """if self.direction_check():
@@ -101,7 +101,7 @@ class Enemy2(pygame.sprite.Sprite):
                 item_no = 2
             if item_no != 0:
                 # Add Item to Items group
-                item = main.Item(item_no)  # create health/money item
+                item = Item(item_no)  # create health/money item
                 main.items.add(item)  # add the item to the items group
                 # Sets the item location to the location of the killed enemy
                 item.posx = self.pos.x

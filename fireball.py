@@ -6,13 +6,13 @@ class Fireball(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.direction = main.player.direction  # get player position
-        self.pos = main.vec(main.player.pos.x, main.player.pos.y - 20)
+        self.pos = main.vec(main.player.pos.x, main.player.pos.y - 40)
         self.vel = main.vec(0, 2)
 
         if self.direction == "RIGHT":
-            self.image = pygame.image.load("png/fireball.png")
+            self.image = pygame.image.load("png/fireball1_R.png")
         else:
-            self.image = pygame.image.load("png/fireball.png")
+            self.image = pygame.image.load("png/fireball1_L.png")
         """
         setting the center of the new rectangle to the same position as the player.pos
         the center of the fireball's rectangle is positioned at the same location as the player's position.
@@ -21,8 +21,8 @@ class Fireball(pygame.sprite.Sprite):
         self.rect.y = main.player.pos.y - 40
 
 
-    def fire(self):
 
+    def fire(self):
         main.player.magic_cooldown = 1  # the player cannot fire another firebatt till the previous one exits screen
         # Runs while the fireball is still within the screen w/ extra margin
         """
@@ -30,10 +30,10 @@ class Fireball(pygame.sprite.Sprite):
         """
         if -10 < self.rect.x < 710:
             if self.direction == "RIGHT":
-                self.image = pygame.image.load("png/fireball.png")
+                self.image = pygame.image.load("png/fireball1_R.png")
                 main.displaysurface.blit(self.image, self.rect)
             else:
-                self.image = pygame.image.load("png/fireball.png")
+                self.image = pygame.image.load("png/fireball1_L.png")
                 main.displaysurface.blit(self.image, self.rect)
 
             if self.direction == "RIGHT":
@@ -42,7 +42,7 @@ class Fireball(pygame.sprite.Sprite):
             else:
 
                 self.pos.x -= 5
-                print("siu2")
+
                 self.gravity_check()
 
             self.rect.center = self.pos
@@ -62,12 +62,11 @@ class Fireball(pygame.sprite.Sprite):
             if len(hits) == 2:
                 lowest = hits[0]
                 if self.pos.y < lowest.rect.top:
-                    print(lowest.rect.top)
                     self.pos.y = lowest.rect.top - 20  # Align the fireball with the top of the ground object
                     self.vel.y = 0  # Stop the fireball from moving vertically
             elif pl_hits:
                 lowest = pl_hits[0]
-                self.pos.y = lowest.rect.top   # Align the fireball with the top of the ground object
+                self.pos.y = lowest.rect.top - 20   # Align the fireball with the top of the ground object
                 self.vel.y = 0  # Stop the fireball from moving vertically
             self.vel.y += 0.7
 

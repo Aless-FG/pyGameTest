@@ -93,9 +93,11 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.cooldown = False
         self.health = 5
         self.mana = 90
+        self.money = 10
         self.xp = 0
         self.magic_cooldown = 1 # the player can use a fireball
         self.slash = 0 # needed for the sound effect
+        self.fmj = False
 
     def move(self):
 
@@ -248,12 +250,15 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
             elif pl_hits: # player is on a platform
+
                 self.magic_cooldown = 0
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
-                    self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
+                    self.pos.y = lowest.rect.top - 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
+                if player.attacking == True and fireballs:
+                    p1.destroy_platform()
 
 
 class EventHandler():
@@ -334,6 +339,9 @@ class EventHandler():
         self.root.destroy()
         castle.hide = True
         self.battle = True
+        p1.destroy = False
+        p1.hide = False
+        platform_group.add(p1)
         button.imgdisp = 1
         pygame.time.set_timer(self.enemy_generation, 2000)
         mmanager.playsoundtrack(soundtrack[1], -1, 0.05)
@@ -345,7 +353,9 @@ class EventHandler():
         pygame.time.set_timer(self.enemy_generation2, 2500)
         self.world = 2
         button.imgdisp = 1
+        p1.destroy = False
         p1.hide = False
+        platform_group.add(p1)
         castle.hide = True
         self.battle = True
         mmanager.playsoundtrack(soundtrack[1], -1, 0.05)
@@ -448,11 +458,15 @@ while True:
     displaysurface.blit(status_bar.surf, (630, 5))
     status_bar.update_draw()
     handler.update()
-
+    if player.fmj: # player bought the fmj power up
+        displaysurface.blit(pygame.image.load("png/fmj.png"), (360, 10))
     for entity in enemies:  # spawns enemies of world 1
         entity.update()
         entity.move()
         entity.render()
+        if event.type == entity.fmj_cooldown: # if we do not set a cooldown the enemy will die instantly w/ fmj
+            entity.cooldown = False
+            pygame.time.set_timer(enemy.fmj_cooldown, 0)
     for entity2 in enemies2:  # spawns enemies of world 2
         entity2.update()
         entity2.move()
@@ -463,6 +477,7 @@ while True:
 
     for fb in fireballs:
         fb.fire()
+
         pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2)
 
 
@@ -504,11 +519,15 @@ while True:
         if event.type == hit_cooldown:
             player.cooldown = False
             pygame.time.set_timer(hit_cooldown, 0)
+
         # Event handling for a range of different key presses
         if event.type == pygame.KEYDOWN and cursor.wait == 0:
+            if event.key == pygame.K_f and player.money >= 5 and player.fmj == False: # fmj fireball upgrade (press F)
+                player.money -= 5
+                player.fmj = True
+
             if event.key == pygame.K_e and 450 < player.rect.x < 550:
-                print(
-                    "stage handler IF")  # the player must press E and must be standing near the entrance of the castle
+                  # the player must press E and must be standing near the entrance of the castle
                 handler.stage_handler()  # shows dungeons
             if event.key == pygame.K_n:
                 if handler.world == 1:
@@ -533,6 +552,8 @@ while True:
                     fireball = Fireball()
                     fireballs.add(fireball)
                     ground_group.add(fireball)
+
+
 
                     mmanager.playsound(fireball_sound, 0.3)
             if event.key == pygame.K_RETURN:

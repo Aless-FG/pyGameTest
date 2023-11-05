@@ -27,5 +27,5 @@ class Item(pygame.sprite.Sprite):
                 main.health.image = main.health_ani[main.player.health] # update healthbar
                 self.kill() # destroy the sprite
             if self.type == 2:
-                # handler.money += 1
+                main.player.money += main.enemy.money
                 self.kill()
