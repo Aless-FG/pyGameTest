@@ -23,12 +23,14 @@ class Fireball(pygame.sprite.Sprite):
 
 
     def fire(self):
-        main.player.magic_cooldown = 1  # the player cannot fire another firebatt till the previous one exits screen
+        main.player.magic_cooldown  = False
+
         # Runs while the fireball is still within the screen w/ extra margin
         """
         As long as the fireball is within the range of -10 and 710, keep drawing and moving the fireball forward
         """
         if -10 < self.rect.x < 710:
+
             if self.direction == "RIGHT":
                 self.image = pygame.image.load("png/fireball1_R.png")
                 main.displaysurface.blit(self.image, self.rect)
@@ -49,7 +51,7 @@ class Fireball(pygame.sprite.Sprite):
 
         else:
             self.kill()
-            main.player.magic_cooldown = 1
+            main.player.magic_cooldown = True
             main.player.attacking = False
 
     def gravity_check(self):

@@ -10,11 +10,12 @@ vec = pygame.math.Vector2
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("png/Enemy.png")
+        self.image = pygame.image.load("png/enemy_test.png")
         self.rect = self.image.get_rect()
+
         self.pos = vec(0, 0)
         self.vel = vec(0, 0)
-        self.enemy_hp = 6
+        self.enemy_hp = 5
         self.direction = random.randint(0, 1)  # 0 for Right, 1 for Left
         self.vel.x = random.randint(2, 6) / 2  # Randomized velocity of the generated enemy
         self.mana = random.randint(1, 3)  # the enemy will drop a random amount of mana
@@ -39,6 +40,7 @@ class Enemy(pygame.sprite.Sprite):
         (This is because pos.x returns the x-coordinate of the middle of the enemy)
 
         """
+        self.rect.midbottom = self.pos
         if self.pos.x >= (WIDTH - 20):
             self.direction = 1
         elif self.pos.x <= 0:
@@ -50,8 +52,9 @@ class Enemy(pygame.sprite.Sprite):
         if self.direction == 1:
             self.pos.x -= self.vel.x
 
-        self.rect.center = self.pos  #  If not for this, the “rect” of the enemy would be left behind at the initial spawn point and collisions would not occur accurately
+        self.rect.topleft = self.pos  # Updates rect
 
+        pygame.draw.rect(displaysurface, (255, 0, 0), self.rect, 2)  # enemy hitbox
     def update(self):
 
         # Checks for collision with the Player
@@ -71,11 +74,22 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.center = self.pos
                 self.enemy_hp -= 1
                 print("Enemy hit")
+            elif self.direction == 1 and main.player.direction == "LEFT": # knockback to the left (player behind the enemy)
+                self.pos.x -= 40
+                self.rect.center = self.pos
+                self.enemy_hp -= 1
+                print("Enemy hit")
+            elif self.direction == 0 and main.player.direction == "RIGHT": # knockback to the right (player behind the enemy)
+                self.pos.x += 40
+                self.rect.center = self.pos
+                self.enemy_hp -= 1
+                print("Enemy hit")
         if f_hits and main.player.fmj == False:
             print("Enemy hit w/ a fireball")
             self.enemy_hp -= 3
             print(self.enemy_hp)
             main.fireball.kill()
+            main.player.magic_cooldown = True
         elif f_hits and self.cooldown == False:
             self.cooldown = True
             pygame.time.set_timer(self.fmj_cooldown, 500)
@@ -83,7 +97,7 @@ class Enemy(pygame.sprite.Sprite):
             print(self.enemy_hp)
             self.enemy_hp -= 3
 
-        if self.enemy_hp == 0:
+        if self.enemy_hp <= 0:
             rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
             item_no = 0
             if rand_num >= 0 and rand_num <= 5:  # 6% chance of a health drop

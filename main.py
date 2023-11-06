@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.mana = 90
         self.money = 10
         self.xp = 0
-        self.magic_cooldown = 1 # the player can use a fireball
+        self.magic_cooldown = True # the player can use a fireball
         self.slash = 0 # needed for the sound effect
         self.fmj = False
 
@@ -172,10 +172,17 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             # Check direction for correct animation to display
         if self.direction == "RIGHT":
             self.image = attack_ani_R[self.attack_frame]
+            self.rect = self.image.get_rect()
+            self.rect.topleft = (self.pos.x, self.pos.y)  # Adjust the top left corner to match the player's position
+            self.rect.width = self.image.get_width()  # Set the width to match the image's width
+            self.rect.height = self.image.get_height()  # Set the height to match the image's height
         elif self.direction == "LEFT":
             self.correction()
             self.image = attack_ani_L[self.attack_frame]
-
+            self.rect = self.image.get_rect()
+            self.rect.topleft = (self.pos.x, self.pos.y)  # Adjust the top left corner to match the player's position
+            self.rect.width = self.image.get_width()  # Set the width to match the image's width
+            self.rect.height = self.image.get_height()  # Set the height to match the image's height
             # Update the current attack frame
         self.attack_frame += 1
 
@@ -239,7 +246,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         """
         if self.vel.y > 0:
             if hits:  # will run if the hits variable recorded a collision between the player and ground
-                self.magic_cooldown = 1
+
                 """
                 selects the first ground object from the list of hits. 
                 The assumption here is that the first ground object in the list is the one closest to the player's current position along the y-axis.
@@ -251,7 +258,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.jumping = False
             elif pl_hits: # player is on a platform
 
-                self.magic_cooldown = 0
+
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
                     self.pos.y = lowest.rect.top - 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
@@ -285,6 +292,7 @@ class EventHandler():
         if self.world == 1:
             pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage))  # sets the timer for enemy generation
         elif self.world == 2:
+            print("SIUM WORLD2")
             pygame.time.set_timer(self.enemy_generation2, 1500 - (50 * self.stage))
     def update(self):
         if self.dead_enemy_count == self.stage_enemies[self.stage - 1]:  # if all the enemies have been killed
@@ -316,7 +324,7 @@ class EventHandler():
 
     def stage_handler(self):  # starting menu
         # Code for the Tkinter stage selection window
-        print("stage handler function")
+
         self.root = Tk()
         self.root.geometry('200x170')
 
@@ -334,7 +342,7 @@ class EventHandler():
         self.root.mainloop()
 
     def world1(self):
-        print("world1")
+
         self.world = 1
         self.root.destroy()
         castle.hide = True
@@ -477,8 +485,7 @@ while True:
 
     for fb in fireballs:
         fb.fire()
-
-        pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2)
+        pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2) # fireball hitbox
 
 
     for b in bolts:
@@ -507,7 +514,9 @@ while True:
                 enemies.add(enemy)
                 handler.enemy_count += 1
         if event.type == handler.enemy_generation2: # second world
+
             if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
+                print("EVENTO WORLD 2")
                 enemy2 = Enemy2()  # create new enemy
                 enemies2.add(enemy2)
                 handler.enemy_count += 1
@@ -545,16 +554,14 @@ while True:
 
             if event.key == pygame.K_SPACE:
                 player.jump()
-            if event.key == pygame.K_m : # use m key to fire (no cooldown is more fun :) )
+            if event.key == pygame.K_m and player.magic_cooldown == True: # use m key to fire (no cooldown is more fun :) )
                 if player.mana >= 6: # it costs 6 mana to fire
+
                     player.mana -= 6
                     player.attacking = True
                     fireball = Fireball()
                     fireballs.add(fireball)
                     ground_group.add(fireball)
-
-
-
                     mmanager.playsound(fireball_sound, 0.3)
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:

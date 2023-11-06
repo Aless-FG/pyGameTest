@@ -32,7 +32,7 @@ class Enemy2(pygame.sprite.Sprite):
 
     def move(self):
         if main.cursor.wait == 1: return
-
+        pygame.draw.rect(main.displaysurface, (255, 0, 0), self.rect, 2)  # hitbox
         # Causes the enemy to change directions upon reaching the end of screen
         if self.pos.x >= (main.WIDTH - 20):
             self.direction = 1
@@ -60,7 +60,7 @@ class Enemy2(pygame.sprite.Sprite):
         elif self.direction == 1:
             self.pos.x -= self.vel.x
             self.wait += self.vel.x
-        rand_num = numpy.random.uniform(0, 50)
+        rand_num = numpy.random.uniform(0, 70)
         if int(rand_num) < 1:
             bolt = Bolt(self.pos.x, self.pos.y, self.direction)
             main.bolts.add(bolt)
