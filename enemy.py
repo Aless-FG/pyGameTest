@@ -10,7 +10,7 @@ vec = pygame.math.Vector2
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("png/enemy_test.png")
+        self.image = pygame.image.load("png/base_enemy_sprite_left.png")
         self.rect = self.image.get_rect()
 
         self.pos = vec(0, 0)
@@ -23,10 +23,12 @@ class Enemy(pygame.sprite.Sprite):
         # Sets the initial position of the enemy
         if self.direction == 0: # it spawns to the left, goes to the right
             self.pos.x = 0
-            self.pos.y = 235
+            self.pos.y = 250
+
         if self.direction == 1: # it spawns to the right, goes to the left
             self.pos.x = 700
-            self.pos.y = 235
+            self.pos.y = 250
+
         self.smallerfont = pygame.font.SysFont('notosansmono', 16)
         self.fmj_cooldown = pygame.USEREVENT + 3
         self.cooldown = False
@@ -43,9 +45,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.midbottom = self.pos
         if self.pos.x >= (WIDTH - 20):
             self.direction = 1
+            self.image = pygame.image.load("png/base_enemy_sprite_left.png")
         elif self.pos.x <= 0:
             self.direction = 0
-
+            self.image = pygame.image.load("png/base_enemy_sprite_right.png")
         # Updates position with new values
         if self.direction == 0:
             self.pos.x += self.vel.x
@@ -100,9 +103,9 @@ class Enemy(pygame.sprite.Sprite):
         if self.enemy_hp <= 0:
             rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
             item_no = 0
-            if rand_num >= 0 and rand_num <= 5:  # 6% chance of a health drop
+            if rand_num >= 0 and rand_num <= 7:  # 6% chance of a health drop
                 item_no = 1
-            elif rand_num > 5 and rand_num <= 99: # 10% chance of a money drop
+            elif rand_num > 10 and rand_num <= 99: # 10% chance of a money drop
                 item_no = 2
             if item_no != 0:
                 # Add Item to Items group

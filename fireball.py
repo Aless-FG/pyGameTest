@@ -10,9 +10,9 @@ class Fireball(pygame.sprite.Sprite):
         self.vel = main.vec(0, 2)
 
         if self.direction == "RIGHT":
-            self.image = pygame.image.load("png/fireball1_R.png")
+            self.image = pygame.image.load("png/fireball_sprite.png")
         else:
-            self.image = pygame.image.load("png/fireball1_L.png")
+            self.image = pygame.image.load("png/fireball_sprite_left.png")
         """
         setting the center of the new rectangle to the same position as the player.pos
         the center of the fireball's rectangle is positioned at the same location as the player's position.
@@ -32,10 +32,10 @@ class Fireball(pygame.sprite.Sprite):
         if -10 < self.rect.x < 710:
 
             if self.direction == "RIGHT":
-                self.image = pygame.image.load("png/fireball1_R.png")
+                self.image = pygame.image.load("png/fireball_sprite.png")
                 main.displaysurface.blit(self.image, self.rect)
             else:
-                self.image = pygame.image.load("png/fireball1_L.png")
+                self.image = pygame.image.load("png/fireball_sprite_left.png")
                 main.displaysurface.blit(self.image, self.rect)
 
             if self.direction == "RIGHT":
@@ -64,11 +64,11 @@ class Fireball(pygame.sprite.Sprite):
             if len(hits) == 2:
                 lowest = hits[0]
                 if self.pos.y < lowest.rect.top:
-                    self.pos.y = lowest.rect.top - 20  # Align the fireball with the top of the ground object
+                    self.pos.y = lowest.rect.top - 10   # Align the fireball with the top of the ground object
                     self.vel.y = 0  # Stop the fireball from moving vertically
             elif pl_hits:
                 lowest = pl_hits[0]
-                self.pos.y = lowest.rect.top - 20   # Align the fireball with the top of the ground object
+                self.pos.y = lowest.rect.top - 10   # Align the fireball with the top of the ground object
                 self.vel.y = 0  # Stop the fireball from moving vertically
             self.vel.y += 0.7
 

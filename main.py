@@ -32,36 +32,48 @@ hit_cooldown = pygame.USEREVENT + 1  # need to create a new custom event
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT))  # displays the game using width and height
 pygame.display.set_caption("Game")  # changes window's title
 
-run_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite2_R.png").convert_alpha(),
-             pygame.image.load("png/Player_Sprite3_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite4_R.png").convert_alpha(),
-             pygame.image.load("png/Player_Sprite5_R.png").convert_alpha(), pygame.image.load("png/Player_Sprite6_R.png").convert_alpha(),
+run_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite2_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite3_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite4_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite5_R.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite6_R.png").convert_alpha(),
              pygame.image.load("png/Player_Sprite_R.png").convert_alpha()]
 
 # Run animation for the LEFT
-run_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite2_L.png").convert_alpha(),
-             pygame.image.load("png/Player_Sprite3_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite4_L.png").convert_alpha(),
-             pygame.image.load("png/Player_Sprite5_L.png").convert_alpha(), pygame.image.load("png/Player_Sprite6_L.png").convert_alpha(),
+run_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite2_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite3_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite4_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite5_L.png").convert_alpha(),
+             pygame.image.load("png/Player_Sprite6_L.png").convert_alpha(),
              pygame.image.load("png/Player_Sprite_L.png").convert_alpha()]
 
 # Attack animation for the RIGHT
-attack_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(), pygame.image.load("png/Player_Attack_R.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack2_R.png").convert_alpha(), pygame.image.load("png/Player_Attack2_R.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack3_R.png").convert_alpha(), pygame.image.load("png/Player_Attack3_R.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack4_R.png").convert_alpha(), pygame.image.load("png/Player_Attack4_R.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack5_R.png").convert_alpha(), pygame.image.load("png/Player_Attack5_R.png").convert_alpha(),
+attack_ani_R = [pygame.image.load("png/Player_Sprite_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_R.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_R.png").convert_alpha(),
                 pygame.image.load("png/Player_Sprite_R.png").convert_alpha()]
 
 # Attack animation for the LEFT
-attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(), pygame.image.load("png/Player_Attack_L.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack2_L.png").convert_alpha(), pygame.image.load("png/Player_Attack2_L.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack3_L.png").convert_alpha(), pygame.image.load("png/Player_Attack3_L.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack4_L.png").convert_alpha(), pygame.image.load("png/Player_Attack4_L.png").convert_alpha(),
-                pygame.image.load("png/Player_Attack5_L.png").convert_alpha(), pygame.image.load("png/Player_Attack5_L.png").convert_alpha(),
+attack_ani_L = [pygame.image.load("png/Player_Sprite_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack2_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack3_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack4_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_L.png").convert_alpha(),
+                pygame.image.load("png/Player_Attack5_L.png").convert_alpha(),
                 pygame.image.load("png/Player_Sprite_L.png").convert_alpha()]
-
-health_ani = [pygame.image.load("png/heart0.png").convert_alpha(), pygame.image.load("png/heart.png").convert_alpha(),
-              pygame.image.load("png/heart2.png").convert_alpha(), pygame.image.load("png/heart3.png").convert_alpha(),
-              pygame.image.load("png/heart4.png").convert_alpha(), pygame.image.load("png/heart5.png").convert_alpha()]
 
 # Music and Sound
 soundtrack = ["tracks/background_village.wav", "tracks/battle_music.wav", "tracks/gameover.wav"]
@@ -71,7 +83,9 @@ fireball_sound = pygame.mixer.Sound("tracks/fireball_sound.wav")
 enemy_hit = pygame.mixer.Sound("tracks/enemy_hit.wav")
 
 mmanager = MusicManager()
-mmanager.playsoundtrack(soundtrack[0], -1, 0.05) # The second parameter states that it should repeat infinitely
+mmanager.playsoundtrack(soundtrack[0], -1, 0.05)  # The second parameter states that it should repeat infinitely
+
+
 class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite class
     def __init__(self):
         super().__init__()
@@ -91,13 +105,16 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.attacking = False
         self.attack_frame = 0
         self.cooldown = False
-        self.health = 5
+        self.max_health = 8
+        self.health = self.max_health
+        self.extended_hp = 0
+        self.dmg = 0  # damage taken by the player
         self.mana = 90
         self.money = 10
         self.xp = 0
-        self.magic_cooldown = True # the player can use a fireball
-        self.slash = 0 # needed for the sound effect
-        self.fmj = False
+        self.magic_cooldown = True  # the player can use a fireball
+        self.slash = 0  # needed for the sound effect
+        self.fmj = False  # fmj power up
 
     def move(self):
 
@@ -134,6 +151,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
     def update(self):  # This function is in charge of changing the movement frame of the Player if he's moving.
         if cursor.wait == 1: return
         pygame.draw.rect(displaysurface, (255, 0, 0), self.rect, 5)
+
         if self.move_frame > 6:
             self.move_frame = 0
             return
@@ -163,7 +181,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             self.attack_frame = 0
             self.attacking = False
 
-        if self.attack_frame == 0: # ensures that the sound is only played on the first attack frame
+        if self.attack_frame == 0:  # ensures that the sound is only played on the first attack frame
             mmanager.playsound(swordtrack[self.slash], 0.05)
 
             self.slash += 1
@@ -196,8 +214,9 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             pygame.time.set_timer(hit_cooldown, 1000)  # Resets cooldown in 1 second
 
             print("hit")
-            self.health = self.health - 1
-            health.image = health_ani[self.health]
+            self.health -= 1
+            self.dmg += 1
+            # health.image = health_ani[self.health]
 
             if self.health <= 0:
                 mmanager.stop()
@@ -256,8 +275,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
-            elif pl_hits: # player is on a platform
-
+            elif pl_hits:  # player is on a platform
 
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
@@ -275,8 +293,8 @@ class EventHandler():
         self.enemy_count = 0
         self.dead_enemy_count = 0
         self.battle = False
-        self.enemy_generation = pygame.USEREVENT + 2 # generates enemies in world 1
-        self.enemy_generation2 = pygame.USEREVENT + 3 # generates enemies in world 2
+        self.enemy_generation = pygame.USEREVENT + 2  # generates enemies in world 1
+        self.enemy_generation2 = pygame.USEREVENT + 3  # generates enemies in world 2
         self.world = 0
         self.stage_enemies = []  # enemies generation
         for x in range(1, 21):
@@ -290,10 +308,12 @@ class EventHandler():
         print("Stage: " + str(self.stage))
         # The higher the stage number, the lower the time gap between enemy spawns, meaning harder levels
         if self.world == 1:
-            pygame.time.set_timer(self.enemy_generation, 1500 - (50 * self.stage))  # sets the timer for enemy generation
+            pygame.time.set_timer(self.enemy_generation,
+                                  1500 - (50 * self.stage))  # sets the timer for enemy generation
         elif self.world == 2:
             print("SIUM WORLD2")
             pygame.time.set_timer(self.enemy_generation2, 1500 - (50 * self.stage))
+
     def update(self):
         if self.dead_enemy_count == self.stage_enemies[self.stage - 1]:  # if all the enemies have been killed
             self.dead_enemy_count = 0  # resets the counter
@@ -302,7 +322,7 @@ class EventHandler():
 
     def home(self):
         # Reset Battle code
-        pygame.time.set_timer(self.enemy_generation, 0) # disables enemies generation (world 1)
+        pygame.time.set_timer(self.enemy_generation, 0)  # disables enemies generation (world 1)
         pygame.time.set_timer(self.enemy_generation2, 0)  # disables enemies generation (world 2)
         self.battle = False
         self.enemy_count = 0
@@ -319,7 +339,7 @@ class EventHandler():
         castle.hide = False
         background.bgimage = pygame.image.load("png/Background.png")
         ground.image = pygame.image.load("png/Ground.png")
-        button.render(button.imgdisp) # renders home or pause button
+        button.render(button.imgdisp)  # renders home or pause button
         cursor.hover()
 
     def stage_handler(self):  # starting menu
@@ -426,9 +446,6 @@ fireballs = pygame.sprite.Group()
 bolts = pygame.sprite.Group()
 font = pygame.font.get_fonts()
 
-
-
-
 while True:
     player.gravity_check()
     mouse = pygame.mouse.get_pos()  # stores a list of two values, the first being the x-coordinate, and the second being the y-coordinate
@@ -437,6 +454,7 @@ while True:
     if player.attacking == True:
         player.attack()
     player.move()
+    print(player.extended_hp)
     """
     render functions
     Always render the background first, then the ground and then all the players and enemies on top of the ground.
@@ -454,7 +472,7 @@ while True:
     """
     if player.health > 0:
         displaysurface.blit(player.image, player.rect)
-    health.render()  # rect stores a pair coordinates
+    health.render()
     if stage_display.display == True:
         stage_display.move_display()
     if stage_display.clear == True:
@@ -466,13 +484,13 @@ while True:
     displaysurface.blit(status_bar.surf, (630, 5))
     status_bar.update_draw()
     handler.update()
-    if player.fmj: # player bought the fmj power up
+    if player.fmj:  # player bought the fmj power up
         displaysurface.blit(pygame.image.load("png/fmj.png"), (360, 10))
     for entity in enemies:  # spawns enemies of world 1
         entity.update()
         entity.move()
         entity.render()
-        if event.type == entity.fmj_cooldown: # if we do not set a cooldown the enemy will die instantly w/ fmj
+        if event.type == entity.fmj_cooldown:  # if we do not set a cooldown the enemy will die instantly w/ fmj
             entity.cooldown = False
             pygame.time.set_timer(enemy.fmj_cooldown, 0)
     for entity2 in enemies2:  # spawns enemies of world 2
@@ -485,8 +503,7 @@ while True:
 
     for fb in fireballs:
         fb.fire()
-        pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2) # fireball hitbox
-
+        pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2)  # fireball hitbox
 
     for b in bolts:
         b.fire()
@@ -500,11 +517,11 @@ while True:
             # For events that occur upon clicking the mouse (left click)
         if event.type == pygame.MOUSEBUTTONDOWN:
             if 620 <= mouse[0] <= 670 and 300 <= mouse[1] <= 345:
-                if button.imgdisp == 1: # if it shows the pause button
+                if button.imgdisp == 1:  # if it shows the pause button
                     cursor.pause()
-                elif button.imgdisp == 0: # if it shows the home button
+                elif button.imgdisp == 0:  # if it shows the home button
                     handler.home()
-        if event.type == handler.enemy_generation: # first world
+        if event.type == handler.enemy_generation:  # first world
             """
             will keep generating enemies every time the timer for enemy generation is triggered. 
             However, it will not generate more enemies than what our handler’s stage_enemies variable has defined as the max limit for that stage
@@ -513,10 +530,10 @@ while True:
                 enemy = Enemy()  # create new enemy
                 enemies.add(enemy)
                 handler.enemy_count += 1
-        if event.type == handler.enemy_generation2: # second world
+        if event.type == handler.enemy_generation2:  # second world
 
             if handler.enemy_count < handler.stage_enemies[handler.stage - 1]:
-                print("EVENTO WORLD 2")
+
                 enemy2 = Enemy2()  # create new enemy
                 enemies2.add(enemy2)
                 handler.enemy_count += 1
@@ -531,22 +548,24 @@ while True:
 
         # Event handling for a range of different key presses
         if event.type == pygame.KEYDOWN and cursor.wait == 0:
-            if event.key == pygame.K_f and player.money >= 5 and player.fmj == False: # fmj fireball upgrade (press F)
+            if event.key == pygame.K_f and player.money >= 5 and player.fmj == False:  # fmj fireball upgrade (press F)
                 player.money -= 5
                 player.fmj = True
 
             if event.key == pygame.K_e and 450 < player.rect.x < 550:
-                  # the player must press E and must be standing near the entrance of the castle
+                # the player must press E and must be standing near the entrance of the castle
                 handler.stage_handler()  # shows dungeons
             if event.key == pygame.K_n:
                 if handler.world == 1:
-                    if handler.battle == True and len(enemies) == 0:  # the player must be in world 2 and there must be 0 enemies
+                    if handler.battle == True and len(
+                            enemies) == 0:  # the player must be in world 2 and there must be 0 enemies
                         handler.next_stage()  # advance to the next stage
                         stage_display = StageDisplay()
                         stage_display.display = True
                         # Render stage display
                 elif handler.world == 2:
-                    if handler.battle == True and len(enemies2) == 0:  # the player must be in world 2 and there must be 0 enemies
+                    if handler.battle == True and len(
+                            enemies2) == 0:  # the player must be in world 2 and there must be 0 enemies
                         handler.next_stage()  # advance to the next stage
                         stage_display = StageDisplay()
                         stage_display.display = True
@@ -554,8 +573,8 @@ while True:
 
             if event.key == pygame.K_SPACE:
                 player.jump()
-            if event.key == pygame.K_m and player.magic_cooldown == True: # use m key to fire (no cooldown is more fun :) )
-                if player.mana >= 6: # it costs 6 mana to fire
+            if event.key == pygame.K_m and player.magic_cooldown == True:  # use m key to fire (no cooldown is more fun :) )
+                if player.mana >= 6:  # it costs 6 mana to fire
 
                     player.mana -= 6
                     player.attacking = True
@@ -568,7 +587,6 @@ while True:
                     player.attack()
                     player.attacking = True
                 player.update()
-
 
     FPS_CLOCK.tick(FPS)  # limits fps to 60
 
