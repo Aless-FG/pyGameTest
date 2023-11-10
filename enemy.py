@@ -64,6 +64,7 @@ class Enemy(pygame.sprite.Sprite):
         hits = pygame.sprite.spritecollide(self, main.playergroup, False)
         # Checks for collision with Fireballs
         f_hits = pygame.sprite.spritecollide(self, main.fireballs, False)
+        i_hits = pygame.sprite.spritecollide(self, main.iceballs, False)
         """If the player is currently in an attack mode, it means that the collision has occurred due to the player’s attack. 
         Thus, we kill off the enemy sprite using the kill() command."""
         if hits and main.player.attacking == True:
@@ -100,12 +101,28 @@ class Enemy(pygame.sprite.Sprite):
             print(self.enemy_hp)
             self.enemy_hp -= 3
 
+        if i_hits and main.player.fmj == False:
+            print("Enemy hit w/ an iceball")
+            self.enemy_hp -= 2
+            print(self.enemy_hp)
+            self.vel.x /= 2
+            main.iceball.kill()
+            main.player.magic_cooldown = True
+        elif i_hits and self.cooldown == False:
+            self.cooldown = True
+            pygame.time.set_timer(self.fmj_cooldown, 500)
+            print("Enemy hit w/ a iceball (FMJ)")
+            print(self.enemy_hp)
+            self.vel.x /= 2
+            self.enemy_hp -= 2
+
+
         if self.enemy_hp <= 0:
             rand_num = numpy.random.uniform(0, 100) #  random.uniform has a uniform spread
             item_no = 0
-            if rand_num >= 0 and rand_num <= 7:  # 6% chance of a health drop
+            if rand_num >= 0 and rand_num <= 97:  # 6% chance of a health drop
                 item_no = 1
-            elif rand_num > 10 and rand_num <= 99: # 10% chance of a money drop
+            elif rand_num > 97 and rand_num <= 99: # 10% chance of a money drop
                 item_no = 2
             if item_no != 0:
                 # Add Item to Items group

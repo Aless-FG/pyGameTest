@@ -13,6 +13,7 @@ class Item(pygame.sprite.Sprite):
         self.type = itemtype
         self.posx = 0
         self.posy = 0
+        self.vely = 0.02
 
     def render(self):
         self.rect.x = self.posx
@@ -37,3 +38,4 @@ class Item(pygame.sprite.Sprite):
             if self.type == 2:
                 main.player.money += main.enemy.money
                 self.kill()
+

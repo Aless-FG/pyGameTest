@@ -8,6 +8,7 @@ from enemy import Enemy
 from tkinter import Tk, Button
 from healthbar import HealthBar
 from fireball import Fireball
+from iceball import Iceball
 from pform import Platform
 from stagedisplay import StageDisplay
 from statusbar import StatusBar
@@ -112,7 +113,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.mana = 90
         self.money = 10
         self.xp = 0
-        self.magic_cooldown = True  # the player can use a fireball
+        self.magic_cooldown = True  # the player can use a fireball/iceball
         self.slash = 0  # needed for the sound effect
         self.fmj = False  # fmj power up
 
@@ -279,10 +280,12 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
 
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
-                    self.pos.y = lowest.rect.top - 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
+                    self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
                 if player.attacking == True and fireballs:
+                    p1.destroy_platform()
+                if player.attacking == True and iceballs:
                     p1.destroy_platform()
 
 
@@ -443,6 +446,7 @@ enemies = pygame.sprite.Group()
 enemies2 = pygame.sprite.Group()
 items = pygame.sprite.Group()
 fireballs = pygame.sprite.Group()
+iceballs = pygame.sprite.Group()
 bolts = pygame.sprite.Group()
 font = pygame.font.get_fonts()
 
@@ -454,7 +458,7 @@ while True:
     if player.attacking == True:
         player.attack()
     player.move()
-    print(player.extended_hp)
+
     """
     render functions
     Always render the background first, then the ground and then all the players and enemies on top of the ground.
@@ -485,7 +489,7 @@ while True:
     status_bar.update_draw()
     handler.update()
     if player.fmj:  # player bought the fmj power up
-        displaysurface.blit(pygame.image.load("png/fmj.png"), (360, 10))
+        displaysurface.blit(pygame.image.load("png/fmj_sprite.png"), (20, 45))
     for entity in enemies:  # spawns enemies of world 1
         entity.update()
         entity.move()
@@ -504,6 +508,10 @@ while True:
     for fb in fireballs:
         fb.fire()
         pygame.draw.rect(displaysurface, (255, 0, 0), fb.rect, 2)  # fireball hitbox
+
+    for ib in iceballs:
+        ib.fire()
+        pygame.draw.rect(displaysurface, (255, 0, 0), ib.rect, 2)  # iceball hitbox
 
     for b in bolts:
         b.fire()
@@ -573,7 +581,7 @@ while True:
 
             if event.key == pygame.K_SPACE:
                 player.jump()
-            if event.key == pygame.K_m and player.magic_cooldown == True:  # use m key to fire (no cooldown is more fun :) )
+            if event.key == pygame.K_m and player.magic_cooldown == True:  # use m key to fire (fireball)
                 if player.mana >= 6:  # it costs 6 mana to fire
 
                     player.mana -= 6
@@ -582,6 +590,16 @@ while True:
                     fireballs.add(fireball)
                     ground_group.add(fireball)
                     mmanager.playsound(fireball_sound, 0.3)
+
+            if event.key == pygame.K_k and player.magic_cooldown == True:  # use k key to fire (iceball)
+                if player.mana >= 3:  # it costs 6 mana to fire
+
+                    player.mana -= 3
+                    player.attacking = True
+                    iceball = Iceball()
+                    iceballs.add(iceball)
+                    ground_group.add(iceball)
+
             if event.key == pygame.K_RETURN:
                 if player.attacking == False:
                     player.attack()
