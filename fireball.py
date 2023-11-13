@@ -10,9 +10,9 @@ class Fireball(pygame.sprite.Sprite):
         self.vel = main.vec(0, 2)
 
         if self.direction == "RIGHT":
-            self.image = pygame.image.load("png/fireball_sprite.png")
+            self.image = pygame.image.load("png/fireball_sprite.png").convert_alpha()
         else:
-            self.image = pygame.image.load("png/fireball_sprite_left.png")
+            self.image = pygame.image.load("png/fireball_sprite_left.png").convert_alpha()
         """
         setting the center of the new rectangle to the same position as the player.pos
         the center of the fireball's rectangle is positioned at the same location as the player's position.
@@ -32,10 +32,10 @@ class Fireball(pygame.sprite.Sprite):
         if -10 < self.rect.x < 710:
 
             if self.direction == "RIGHT":
-                self.image = pygame.image.load("png/fireball_sprite.png")
+                self.image = pygame.image.load("png/fireball_sprite.png").convert_alpha()
                 main.displaysurface.blit(self.image, self.rect)
             else:
-                self.image = pygame.image.load("png/fireball_sprite_left.png")
+                self.image = pygame.image.load("png/fireball_sprite_left.png").convert_alpha()
                 main.displaysurface.blit(self.image, self.rect)
 
             if self.direction == "RIGHT":
