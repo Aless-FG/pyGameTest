@@ -10,7 +10,7 @@ vec = pygame.math.Vector2
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("png/base_enemy_sprite_left.png")
+        self.image = pygame.image.load("png/enemy1_sprite_left.png")
         self.rect = self.image.get_rect()
 
         self.pos = vec(0, 0)
@@ -23,11 +23,11 @@ class Enemy(pygame.sprite.Sprite):
         # Sets the initial position of the enemy
         if self.direction == 0: # it spawns to the left, goes to the right
             self.pos.x = 0
-            self.pos.y = 250
+            self.pos.y = 233
 
         if self.direction == 1: # it spawns to the right, goes to the left
             self.pos.x = 700
-            self.pos.y = 250
+            self.pos.y = 233
 
         self.smallerfont = pygame.font.SysFont('notosansmono', 16)
         self.fmj_cooldown = pygame.USEREVENT + 3
@@ -43,12 +43,12 @@ class Enemy(pygame.sprite.Sprite):
 
         """
         self.rect.midbottom = self.pos
-        if self.pos.x >= (WIDTH - 20):
+        if self.pos.x >= (WIDTH - 64):
             self.direction = 1
-            self.image = pygame.image.load("png/base_enemy_sprite_left.png")
+            self.image = pygame.image.load("png/enemy1_sprite_left.png")
         elif self.pos.x <= 0:
             self.direction = 0
-            self.image = pygame.image.load("png/base_enemy_sprite_right.png")
+            self.image = pygame.image.load("png/enemy1_sprite_right.png")
         # Updates position with new values
         if self.direction == 0:
             self.pos.x += self.vel.x
@@ -96,7 +96,7 @@ class Enemy(pygame.sprite.Sprite):
             main.player.magic_cooldown = True
         elif f_hits and self.cooldown == False:
             self.cooldown = True
-            pygame.time.set_timer(self.fmj_cooldown, 500)
+            pygame.time.set_timer(self.fmj_cooldown, 1000)
             print("Enemy hit w/ a fireball (FMJ)")
             print(self.enemy_hp)
             self.enemy_hp -= 3

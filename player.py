@@ -37,6 +37,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.double_jump = False
         self.smallerfont = pygame.font.SysFont('notosansmono', 16)
 
+
     def move(self):
 
         self.acc = main.vec(0, 0.5)  # Keep a constant acceleration of 0.5 in the downwards direction (gravity)
@@ -182,6 +183,11 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
             self.pos.x -= 20
         if self.attack_frame == 10:
             self.pos.x += 20
+    def mana_restore(self):
+        pl_hits = pygame.sprite.spritecollide(self, main.platform_group, False)
+        if pl_hits and self.mana <= 99 and self.money >= 0:
+            self.mana += 1
+            self.money -= 0.5
 
     def gravity_check(self):
         # takes three parameters, the sprite to be tested, and secondly the sprite group against which the sprite will be tested.
@@ -207,14 +213,13 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.jumping = False
                     #self.double_jump = True
             elif pl_hits:  # player is on a platform
-
+                self.mana_restore()
                 lowest = pl_hits[0]
                 if self.pos.y < lowest.rect.bottom:  # checks if the player's y-coordinate (vertical position) is higher (less than) the bottom y-coordinate of the lowest ground object's bounding rectangle.
                     self.pos.y = lowest.rect.top + 1  # sets the player's y-coordinate to just above the top of the ground object, effectively preventing the player from falling through the ground.
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
                     #self.double_jump = True
-                if main.player.attacking == True and main.fireballs:
+                if main.player.attacking == True or main.player.running and main.fireballs or main.iceballs:
                     main.p1.destroy_platform()
-                if main.player.attacking == True and main.iceballs:
-                    main.p1.destroy_platform()
+

@@ -161,8 +161,8 @@ class EventHandler():
 
         # Bring back normal backgrounds
         castle.hide = False
-        background.bgimage = pygame.image.load("png/Background.png")
-        ground.image = pygame.image.load("png/Ground.png")
+        background.bgimage = pygame.image.load("png/bg_anim/background_sprite2.png")
+        ground.image = pygame.image.load("png/ground_sprite.png")
         button.render(button.imgdisp)  # renders home or pause button
         cursor.hover()
 
@@ -273,14 +273,13 @@ bolts = pygame.sprite.Group()
 font = pygame.font.get_fonts()
 
 
-
-
+print(background.background_files)
 while True:
-    print(player.double_jump)
     player.gravity_check()
     mouse = pygame.mouse.get_pos()  # stores a list of two values, the first being the x-coordinate, and the second being the y-coordinate
     player.update()
-
+    background.update()
+    p1.update()
     if player.attacking == True:
         player.attack()
     player.move()
@@ -289,6 +288,7 @@ while True:
     render functions
     Always render the background first, then the ground and then all the players and enemies on top of the ground.
     """
+
     background.render()
     ground.render()
     button.render(button.imgdisp)
@@ -373,7 +373,6 @@ while True:
                 enemy2 = Enemy2()  # create new enemy
                 enemies2.add(enemy2)
                 handler.enemy_count += 1
-
         """
         It’s important to call the timer again with a time duration of 0.
          This automatically disables it. Otherwise it could keep calling itself every second wasting resources.
@@ -423,7 +422,7 @@ while True:
 
             if event.key == pygame.K_SPACE and player.double_jump == False:
                 player.jump()
-            if event.key == pygame.K_SPACE and player.double_jump == True:
+            if event.key == pygame.K_SPACE and player.double_jump == True and player.mana >= 5:
                 player.double_jump_powerup()
 
             elif event.key == pygame.K_m and player.magic_cooldown == True:  # use m key to fire (fireball)
