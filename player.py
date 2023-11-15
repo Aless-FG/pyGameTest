@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
         self.running = False
         self.move_frame = 0  # track the current frame of the character being displayed
         self.attacking = False
+        self.magic_attacking = False
         self.attack_frame = 0
         self.cooldown = False
         self.max_health = 8
@@ -220,6 +221,6 @@ class Player(pygame.sprite.Sprite):  # inherits from the pygame.sprite.Sprite cl
                     self.vel.y = 0  # sets the player's vertical velocity to 0, effectively stopping any downward movement due to gravity.
                     self.jumping = False
                     #self.double_jump = True
-                if main.player.attacking == True or main.player.running and main.fireballs or main.iceballs:
+                if main.player.magic_attacking == True or main.player.running and main.fireballs or main.iceballs:
                     main.p1.destroy_platform()
 

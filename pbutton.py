@@ -10,11 +10,11 @@ class PButton(pygame.sprite.Sprite):
 
     def render(self, num): # num is used to determine which image to display
         if num == 0:
-            self.image = pygame.image.load("png/home_small.png")
+            self.image = pygame.image.load("png/home_button_sprite.png")
         elif num == 1:
             if main.cursor.wait == 0: #cursor.wait is used to determine which image is to be displayed
-                self.image = pygame.image.load("png/pause_small.png")
+                self.image = pygame.image.load("png/pause_button_sprite.png")
             else:
-                self.image = pygame.image.load("png/play_small.png")
+                self.image = pygame.image.load("png/play_button_sprite.png")
 
         main.displaysurface.blit(self.image, self.vec)

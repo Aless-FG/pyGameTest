@@ -20,7 +20,7 @@ from statusbar import StatusBar
 from pbutton import PButton
 from enemy2 import Enemy2
 from musicmanager import MusicManager
-
+from sphere import Sphere
 # freq, size, channel, buffsize
 pygame.mixer.pre_init(44100, 16, 1, 512)
 pygame.init()  # Begin pygame
@@ -271,7 +271,7 @@ fireballs = pygame.sprite.Group()
 iceballs = pygame.sprite.Group()
 bolts = pygame.sprite.Group()
 font = pygame.font.get_fonts()
-
+sphere = Sphere()
 
 print(background.background_files)
 while True:
@@ -295,6 +295,8 @@ while True:
     cursor.hover()
     castle.update()
     p1.render()
+    sphere.render()
+    sphere.update()
     pygame.draw.rect(displaysurface, (255, 0, 255), player.rect, 2)
     """
     render the player after the castle. 
@@ -401,16 +403,21 @@ while True:
                 player.double_jump_display = False
                 player.double_jump = False
 
-            if event.key == pygame.K_e and 450 < player.rect.x < 550:
+            if event.key == pygame.K_e and 450 < player.rect.x < 550 and handler.battle == False:
                 # the player must press E and must be standing near the entrance of the castle
                 handler.stage_handler()  # shows dungeons
+            if player.rect.colliderect(sphere.rect) and event.key == pygame.K_e:
+                handler.next_stage()  # advance to the next stage
+                sphere.hide = True
+                stage_display = StageDisplay()
+                stage_display.display = True
             if event.key == pygame.K_n:
                 if handler.world == 1:
                     if handler.battle == True and len(
                             enemies) == 0:  # the player must be in world 2 and there must be 0 enemies
-                        handler.next_stage()  # advance to the next stage
-                        stage_display = StageDisplay()
-                        stage_display.display = True
+
+                        sphere.hide = False
+
                         # Render stage display
                 elif handler.world == 2:
                     if handler.battle == True and len(
@@ -429,7 +436,7 @@ while True:
                 if player.mana >= 6:  # it costs 6 mana to fire
 
                     player.mana -= 6
-                    player.attacking = True
+                    player.magic_attacking = True
                     fireball = Fireball()
                     fireballs.add(fireball)
                     ground_group.add(fireball)
@@ -439,7 +446,7 @@ while True:
                 if player.mana >= 3:  # it costs 6 mana to fire
 
                     player.mana -= 3
-                    player.attacking = True
+                    player.magic_attacking = True
                     iceball = Iceball()
                     iceballs.add(iceball)
                     ground_group.add(iceball)

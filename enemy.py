@@ -10,7 +10,7 @@ vec = pygame.math.Vector2
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("png/enemy1_sprite_left.png")
+        self.image = pygame.image.load("png/enemy1_sprite_left.png").convert_alpha()
         self.rect = self.image.get_rect()
 
         self.pos = vec(0, 0)
@@ -45,10 +45,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.midbottom = self.pos
         if self.pos.x >= (WIDTH - 64):
             self.direction = 1
-            self.image = pygame.image.load("png/enemy1_sprite_left.png")
+            self.image = pygame.image.load("png/enemy1_sprite_left.png").convert_alpha()
         elif self.pos.x <= 0:
             self.direction = 0
-            self.image = pygame.image.load("png/enemy1_sprite_right.png")
+            self.image = pygame.image.load("png/enemy1_sprite_right.png").convert_alpha()
         # Updates position with new values
         if self.direction == 0:
             self.pos.x += self.vel.x
@@ -94,12 +94,14 @@ class Enemy(pygame.sprite.Sprite):
             print(self.enemy_hp)
             main.fireball.kill()
             main.player.magic_cooldown = True
+            main.player.magic_attacking = False
         elif f_hits and self.cooldown == False:
             self.cooldown = True
             pygame.time.set_timer(self.fmj_cooldown, 1000)
             print("Enemy hit w/ a fireball (FMJ)")
             print(self.enemy_hp)
             self.enemy_hp -= 3
+            main.player.magic_attacking = False
 
         if i_hits and main.player.fmj == False:
             print("Enemy hit w/ an iceball")
@@ -110,7 +112,7 @@ class Enemy(pygame.sprite.Sprite):
             main.player.magic_cooldown = True
         elif i_hits and self.cooldown == False:
             self.cooldown = True
-            pygame.time.set_timer(self.fmj_cooldown, 500)
+            pygame.time.set_timer(self.fmj_cooldown, 700)
             print("Enemy hit w/ a iceball (FMJ)")
             print(self.enemy_hp)
             self.vel.x /= 2

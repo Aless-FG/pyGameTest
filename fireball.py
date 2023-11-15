@@ -52,7 +52,7 @@ class Fireball(pygame.sprite.Sprite):
         else:
             self.kill()
             main.player.magic_cooldown = True
-            main.player.attacking = False
+            main.player.magic_attacking = False
 
     def gravity_check(self):
 
